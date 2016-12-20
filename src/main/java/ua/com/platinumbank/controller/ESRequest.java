@@ -22,6 +22,31 @@ import ua.com.platinumbank.model.Address;
 @RequestMapping(value = "/es")
 public class ESRequest {
 
+	@RequestMapping(value = "/req", method = RequestMethod.GET)
+	public @ResponseBody String getSearchResultsFromES(HttpServletRequest request,
+			Address address) {
+
+		String region = request.getParameter("region");
+		String district = request.getParameter("district");
+		String cityType = request.getParameter("cityType");
+		String city = request.getParameter("city");
+		String streetType = request.getParameter("streetType");
+		String street = request.getParameter("street");
+		String house = request.getParameter("house");
+		String postIndex = request.getParameter("postIndex");
+
+		// address.setRegion(region);
+		// address.setDistrict(district);
+		// address.setCityType(cityType);
+		// address.setCity(city);
+		// address.setStreetType(streetType);
+		// address.setStreet(street);
+		// address.setHouse(house);
+		// address.setPostIndex(postIndex);
+
+		return queryMatch(region, district, cityType, city, streetType, street, house, postIndex);
+	}
+
 	private static String queryMatch(String region, String district, String cityType, String city,
 			String streetType, String street, String house, String postIndex) {
 
@@ -51,28 +76,4 @@ public class ESRequest {
 		return result.toString();
 	}
 
-	@RequestMapping(value = "/req", method = RequestMethod.GET)
-	public @ResponseBody String getSearchResultsFromES(HttpServletRequest request,
-			Address address) {
-
-		String region = request.getParameter("region");
-		String district = request.getParameter("district");
-		String cityType = request.getParameter("cityType");
-		String city = request.getParameter("city");
-		String streetType = request.getParameter("streetType");
-		String street = request.getParameter("street");
-		String house = request.getParameter("house");
-		String postIndex = request.getParameter("postIndex");
-
-		// address.setRegion(region);
-		// address.setDistrict(district);
-		// address.setCityType(cityType);
-		// address.setCity(city);
-		// address.setStreetType(streetType);
-		// address.setStreet(street);
-		// address.setHouse(house);
-		// address.setPostIndex(postIndex);
-
-		return queryMatch(region, district, cityType, city, streetType, street, house, postIndex);
-	}
 }
