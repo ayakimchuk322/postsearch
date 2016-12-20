@@ -1,7 +1,10 @@
 package ua.com.platinumbank.controller;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Properties;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -24,6 +27,26 @@ import ua.com.platinumbank.model.Address;
 @RestController
 @RequestMapping(value = "/es")
 public class ESRequest {
+
+	private static Properties properties;
+
+	private static String inetAddress;
+
+	// Load properties file with connection specific information
+	static {
+		properties = new Properties();
+
+		try (InputStream propertiesIn = ESRequest.class.getClassLoader()
+				.getResourceAsStream("properties.properties")) {
+
+			properties.load(propertiesIn);
+
+			inetAddress = properties.getProperty("inetaddress");
+		} catch (IOException e) {
+			// TODO replace with logging
+			e.printStackTrace();
+		}
+	}
 
 	@RequestMapping(value = "/req", method = RequestMethod.GET)
 	public @ResponseBody String getSearchResultsFromES(HttpServletRequest request,
@@ -58,14 +81,13 @@ public class ESRequest {
 	private static String queryMatch(String region, String district, String cityType, String city,
 			String streetType, String street, String house, String postIndex) {
 
-		StringBuilder result = new StringBuilder();
-
-		final TransportClient transportClient;
-		final SearchRequestBuilder searchRequestBuilder;
+		TransportClient transportClient;
+		SearchRequestBuilder searchRequestBuilder;
+		SearchResponse searchResponse = null;
 
 		try {
 			transportClient = new PreBuiltTransportClient(Settings.EMPTY).addTransportAddress(
-					new InetSocketTransportAddress(InetAddress.getByName("localhost"), 9300));
+					new InetSocketTransportAddress(InetAddress.getByName(inetAddress), 9300));
 
 			searchRequestBuilder = transportClient.prepareSearch("post").setTypes("address");
 
@@ -109,18 +131,27 @@ public class ESRequest {
 				searchRequestBuilder.setQuery(postIndexQb);
 			}
 
-			SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
+			searchResponse = searchRequestBuilder.execute().actionGet();
 
-			SearchHit[] hits = searchResponse.getHits().getHits();
-
-			for (int i = 0; i < hits.length; i++) {
-				result.append(hits[i].getId());
-				result.append("\n");
-				result.append(hits[i].getSourceAsString());
-				result.append("\n");
-			}
 		} catch (UnknownHostException e) {
+			// TODO replace with logging
 			e.printStackTrace();
+		}
+
+		return parseSearchResponse(searchResponse);
+	}
+
+	private static String parseSearchResponse(SearchResponse searchResponse) {
+
+		StringBuilder result = new StringBuilder();
+
+		SearchHit[] hits = searchResponse.getHits().getHits();
+
+		for (int i = 0; i < hits.length; i++) {
+			result.append(hits[i].getId());
+			result.append("\n");
+			result.append(hits[i].getSourceAsString());
+			result.append("\n");
 		}
 
 		return result.toString();
