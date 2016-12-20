@@ -5,10 +5,13 @@ import java.net.UnknownHostException;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -47,7 +50,7 @@ public class ESRequest {
 		return queryMatch(region, district, cityType, city, streetType, street, house, postIndex);
 	}
 
-	private static String queryMatch(String region, String district, String cityType, String city,
+	private static String queryAll(String region, String district, String cityType, String city,
 			String streetType, String street, String house, String postIndex) {
 
 		StringBuilder result = new StringBuilder();
@@ -60,6 +63,77 @@ public class ESRequest {
 
 			SearchResponse searchResponse = client.prepareSearch("post").setTypes("address")
 					.execute().actionGet();
+
+			SearchHit[] hits = searchResponse.getHits().getHits();
+
+			for (int i = 0; i < hits.length; i++) {
+				result.append(hits[i].getId());
+				result.append("\n");
+				result.append(hits[i].getSourceAsString());
+				result.append("\n");
+			}
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
+
+		return result.toString();
+	}
+
+	private static String queryMatch(String region, String district, String cityType, String city,
+			String streetType, String street, String house, String postIndex) {
+
+		StringBuilder result = new StringBuilder();
+
+		final TransportClient transportClient;
+		final SearchRequestBuilder searchRequestBuilder;
+
+		try {
+			transportClient = new PreBuiltTransportClient(Settings.EMPTY).addTransportAddress(
+					new InetSocketTransportAddress(InetAddress.getByName("localhost"), 9300));
+
+			searchRequestBuilder = transportClient.prepareSearch("post").setTypes("address");
+
+			if (region != null) {
+				QueryBuilder regionQb = QueryBuilders.matchQuery("region", region);
+				searchRequestBuilder.setQuery(regionQb);
+			}
+
+			if (district != null) {
+				QueryBuilder districtQb = QueryBuilders.matchQuery("district", district);
+				searchRequestBuilder.setQuery(districtQb);
+			}
+
+			if (cityType != null) {
+				QueryBuilder cityTypeQb = QueryBuilders.matchQuery("city_type", cityType);
+				searchRequestBuilder.setQuery(cityTypeQb);
+			}
+
+			if (city != null) {
+				QueryBuilder cityQb = QueryBuilders.matchQuery("city", city);
+				searchRequestBuilder.setQuery(cityQb);
+			}
+
+			if (streetType != null) {
+				QueryBuilder streetTypeQb = QueryBuilders.matchQuery("street_type", streetType);
+				searchRequestBuilder.setQuery(streetTypeQb);
+			}
+
+			if (street != null) {
+				QueryBuilder streetQb = QueryBuilders.matchQuery("street", street);
+				searchRequestBuilder.setQuery(streetQb);
+			}
+
+			if (house != null) {
+				QueryBuilder houseQb = QueryBuilders.matchQuery("house", house);
+				searchRequestBuilder.setQuery(houseQb);
+			}
+
+			if (postIndex != null) {
+				QueryBuilder postIndexQb = QueryBuilders.matchQuery("post_index", postIndex);
+				searchRequestBuilder.setQuery(postIndexQb);
+			}
+
+			SearchResponse searchResponse = searchRequestBuilder.execute().actionGet();
 
 			SearchHit[] hits = searchResponse.getHits().getHits();
 
