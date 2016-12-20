@@ -103,4 +103,20 @@ public class Address {
 		return this;
 	}
 
+    @Override
+    public String toString() {
+
+        // @formatter:off
+        return "Address{" +
+            "region='" + region + '\'' +
+            ", district='" + district + '\'' +
+            ", cityType='" + cityType + '\'' +
+            ", city='" + city + '\'' +
+            ", streetType='" + streetType + '\'' +
+            ", street='" + street + '\'' +
+            ", house='" + house + '\'' +
+            ", postIndex='" + postIndex + '\'' +
+            '}';
+        // @formatter:on
+    }
 }

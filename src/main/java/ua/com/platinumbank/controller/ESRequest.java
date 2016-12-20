@@ -1,9 +1,14 @@
 package ua.com.platinumbank.controller;
 
+import static ua.com.platinumbank.util.JSONUtil.addressToJSON;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.servlet.http.HttpServletRequest;
@@ -60,15 +65,6 @@ public class ESRequest {
 		String street = request.getParameter("street");
 		String house = request.getParameter("house");
 		String postIndex = request.getParameter("postIndex");
-
-		// address.setRegion(region);
-		// address.setDistrict(district);
-		// address.setCityType(cityType);
-		// address.setCity(city);
-		// address.setStreetType(streetType);
-		// address.setStreet(street);
-		// address.setHouse(house);
-		// address.setPostIndex(postIndex);
 
 		// Prepare response for html output
 		String response = queryMatch(region, district, cityType, city, streetType, street, house,
@@ -138,10 +134,19 @@ public class ESRequest {
 			e.printStackTrace();
 		}
 
-		return parseSearchResponse(searchResponse);
+		searchResponseToList(searchResponse);
+
+		return searchResponseToString(searchResponse);
 	}
 
-	private static String parseSearchResponse(SearchResponse searchResponse) {
+	/**
+	 * Prints all search results as is.
+	 * 
+	 * @param searchResponse
+	 *            {@link SearchResponse} from ElasticSearch
+	 * @return {@link String} representing this search response
+	 */
+	private static String searchResponseToString(SearchResponse searchResponse) {
 
 		StringBuilder result = new StringBuilder();
 
@@ -155,6 +160,57 @@ public class ESRequest {
 		}
 
 		return result.toString();
+	}
+
+	/**
+	 * Parses {@link SearchResponse} and returns {@link List} filled with
+	 * corresponding {@link Address} objects.
+	 * 
+	 * @param searchResponse
+	 *            {@link SearchResponse} from ElasticSearch
+	 * @return {@link List} with {@link Address} objects
+	 */
+	private static List<Address> searchResponseToList(SearchResponse searchResponse) {
+
+		List<Address> resultList;
+		Map resultSourceMap;
+
+		SearchHit[] hits = searchResponse.getHits().getHits();
+
+		resultList = new ArrayList(hits.length);
+
+		for (int i = 0; i < hits.length; i++) {
+
+			resultSourceMap = hits[i].sourceAsMap();
+
+			Address address = new Address();
+
+			String region = (String) resultSourceMap.get("region");
+			String district = (String) resultSourceMap.get("district");
+			String cityType = (String) resultSourceMap.get("cityType");
+			String city = (String) resultSourceMap.get("city");
+			String streetType = (String) resultSourceMap.get("street_type");
+			String street = (String) resultSourceMap.get("street");
+			String house = (String) resultSourceMap.get("house");
+			String postIndex = (String) resultSourceMap.get("post_index");
+
+			address.setRegion(region);
+			address.setDistrict(district);
+			address.setCityType(cityType);
+			address.setCity(city);
+			address.setStreetType(streetType);
+			address.setStreet(street);
+			address.setHouse(house);
+			address.setPostIndex(postIndex);
+
+			resultList.add(i, address);
+		}
+
+		for (Address a : resultList) {
+			addressToJSON(a);
+		}
+
+		return resultList;
 	}
 
 }
