@@ -4,12 +4,10 @@ public class Address {
 
 	private String region;
 	private String district;
-	private String cityType;
 	private String city;
-	private String streetType;
+	private String postIndex;
 	private String street;
 	private String house;
-	private String postIndex;
 
 	public Address() {
 
@@ -37,17 +35,6 @@ public class Address {
 		return this;
 	}
 
-	public String getCityType() {
-
-		return cityType;
-	}
-
-	public Address setCityType(String cityType) {
-
-		this.cityType = cityType != null ? cityType : "";
-		return this;
-	}
-
 	public String getCity() {
 
 		return city;
@@ -59,14 +46,14 @@ public class Address {
 		return this;
 	}
 
-	public String getStreetType() {
+	public String getPostIndex() {
 
-		return streetType;
+		return postIndex;
 	}
 
-	public Address setStreetType(String streetType) {
+	public Address setPostIndex(String postIndex) {
 
-		this.streetType = streetType != null ? streetType : "";
+		this.postIndex = postIndex != null ? postIndex : "";
 		return this;
 	}
 
@@ -92,17 +79,6 @@ public class Address {
 		return this;
 	}
 
-	public String getPostIndex() {
-
-		return postIndex;
-	}
-
-	public Address setPostIndex(String postIndex) {
-
-		this.postIndex = postIndex != null ? postIndex : "";
-		return this;
-	}
-
 	@Override
 	public String toString() {
 
@@ -110,13 +86,12 @@ public class Address {
         return "Address{" +
             "region='" + region + '\'' +
             ", district='" + district + '\'' +
-            ", cityType='" + cityType + '\'' +
             ", city='" + city + '\'' +
-            ", streetType='" + streetType + '\'' +
+            ", postIndex='" + postIndex + '\'' +
             ", street='" + street + '\'' +
             ", house='" + house + '\'' +
-            ", postIndex='" + postIndex + '\'' +
             '}';
         // @formatter:on
 	}
+
 }

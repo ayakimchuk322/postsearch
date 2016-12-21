@@ -62,15 +62,12 @@ public class ESRequest {
 
 		String region = request.getParameter("region");
 		String district = request.getParameter("district");
-		String cityType = request.getParameter("cityType");
 		String city = request.getParameter("city");
-		String streetType = request.getParameter("streetType");
+		String postIndex = request.getParameter("postIndex");
 		String street = request.getParameter("street");
 		String house = request.getParameter("house");
-		String postIndex = request.getParameter("postIndex");
 
-		String response = queryMatch(region, district, cityType, city, streetType, street, house,
-				postIndex);
+		String response = queryMatch(region, district, city, postIndex, street, house);
 
 		// Prepare response for html output
 		response = "<pre>" + response.replaceAll("<", "&lt;") + "</pre>";
@@ -85,15 +82,12 @@ public class ESRequest {
 
 		String region = request.getParameter("region");
 		String district = request.getParameter("district");
-		String cityType = request.getParameter("cityType");
 		String city = request.getParameter("city");
-		String streetType = request.getParameter("streetType");
+		String postIndex = request.getParameter("postIndex");
 		String street = request.getParameter("street");
 		String house = request.getParameter("house");
-		String postIndex = request.getParameter("postIndex");
 
-		String response = queryTerm(region, district, cityType, city, streetType, street, house,
-				postIndex);
+		String response = queryTerm(region, district, city, postIndex, street, house);
 
 		// Prepare response for html output
 		response = "<pre>" + response.replaceAll("<", "&lt;") + "</pre>";
@@ -102,8 +96,8 @@ public class ESRequest {
 	}
 
 	// TODO add javadoc
-	private static String queryMatch(String region, String district, String cityType, String city,
-			String streetType, String street, String house, String postIndex) {
+	private static String queryMatch(String region, String district, String city, String postIndex,
+			String street, String house) {
 
 		TransportClient transportClient;
 		SearchRequestBuilder searchRequestBuilder;
@@ -125,19 +119,14 @@ public class ESRequest {
 				searchRequestBuilder = searchRequestBuilder.setQuery(districtQb);
 			}
 
-			if (cityType != null) {
-				QueryBuilder cityTypeQb = QueryBuilders.matchQuery("city_type", cityType);
-				searchRequestBuilder = searchRequestBuilder.setQuery(cityTypeQb);
-			}
-
 			if (city != null) {
 				QueryBuilder cityQb = QueryBuilders.matchQuery("city", city);
 				searchRequestBuilder = searchRequestBuilder.setQuery(cityQb);
 			}
 
-			if (streetType != null) {
-				QueryBuilder streetTypeQb = QueryBuilders.matchQuery("street_type", streetType);
-				searchRequestBuilder = searchRequestBuilder.setQuery(streetTypeQb);
+			if (postIndex != null) {
+				QueryBuilder postIndexQb = QueryBuilders.matchQuery("post_index", postIndex);
+				searchRequestBuilder = searchRequestBuilder.setQuery(postIndexQb);
 			}
 
 			if (street != null) {
@@ -148,11 +137,6 @@ public class ESRequest {
 			if (house != null) {
 				QueryBuilder houseQb = QueryBuilders.matchQuery("house", house);
 				searchRequestBuilder = searchRequestBuilder.setQuery(houseQb);
-			}
-
-			if (postIndex != null) {
-				QueryBuilder postIndexQb = QueryBuilders.matchQuery("post_index", postIndex);
-				searchRequestBuilder = searchRequestBuilder.setQuery(postIndexQb);
 			}
 
 			searchResponse = searchRequestBuilder.execute().actionGet();
@@ -169,8 +153,8 @@ public class ESRequest {
 	}
 
 	// TODO add javadoc
-	private static String queryTerm(String region, String district, String cityType, String city,
-			String streetType, String street, String house, String postIndex) {
+	private static String queryTerm(String region, String district, String city, String postIndex,
+			String street, String house) {
 
 		TransportClient transportClient;
 		SearchRequestBuilder searchRequestBuilder;
@@ -192,19 +176,14 @@ public class ESRequest {
 				searchRequestBuilder = searchRequestBuilder.setQuery(districtQb);
 			}
 
-			if (cityType != null) {
-				QueryBuilder cityTypeQb = QueryBuilders.termQuery("city_type.raw", cityType);
-				searchRequestBuilder = searchRequestBuilder.setQuery(cityTypeQb);
-			}
-
 			if (city != null) {
 				QueryBuilder cityQb = QueryBuilders.termQuery("city.raw", city);
 				searchRequestBuilder = searchRequestBuilder.setQuery(cityQb);
 			}
 
-			if (streetType != null) {
-				QueryBuilder streetTypeQb = QueryBuilders.termQuery("street_type.raw", streetType);
-				searchRequestBuilder = searchRequestBuilder.setQuery(streetTypeQb);
+			if (postIndex != null) {
+				QueryBuilder postIndexQb = QueryBuilders.termQuery("post_index.raw", postIndex);
+				searchRequestBuilder = searchRequestBuilder.setQuery(postIndexQb);
 			}
 
 			if (street != null) {
@@ -215,11 +194,6 @@ public class ESRequest {
 			if (house != null) {
 				QueryBuilder houseQb = QueryBuilders.termQuery("house.raw", house);
 				searchRequestBuilder = searchRequestBuilder.setQuery(houseQb);
-			}
-
-			if (postIndex != null) {
-				QueryBuilder postIndexQb = QueryBuilders.termQuery("post_index.raw", postIndex);
-				searchRequestBuilder = searchRequestBuilder.setQuery(postIndexQb);
 			}
 
 			searchResponse = searchRequestBuilder.execute().actionGet();
@@ -283,21 +257,17 @@ public class ESRequest {
 
 			String region = (String) resultSourceMap.get("region");
 			String district = (String) resultSourceMap.get("district");
-			String cityType = (String) resultSourceMap.get("cityType");
 			String city = (String) resultSourceMap.get("city");
-			String streetType = (String) resultSourceMap.get("street_type");
+			String postIndex = (String) resultSourceMap.get("post_index");
 			String street = (String) resultSourceMap.get("street");
 			String house = (String) resultSourceMap.get("house");
-			String postIndex = (String) resultSourceMap.get("post_index");
 
 			address.setRegion(region);
 			address.setDistrict(district);
-			address.setCityType(cityType);
 			address.setCity(city);
-			address.setStreetType(streetType);
+			address.setPostIndex(postIndex);
 			address.setStreet(street);
 			address.setHouse(house);
-			address.setPostIndex(postIndex);
 
 			resultList.add(i, address);
 		}
