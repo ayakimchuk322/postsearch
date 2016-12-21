@@ -6,10 +6,10 @@ import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
 @ComponentScan(basePackages = "ua.com.platinumbank")
-public class RunTestQueryAll {
+public class StartESSearchTest {
 
 	public static void main(String[] args) {
-		SpringApplication.run(RunTestQueryAll.class, args);
+		SpringApplication.run(StartESSearchTest.class, args);
 	}
 
 }

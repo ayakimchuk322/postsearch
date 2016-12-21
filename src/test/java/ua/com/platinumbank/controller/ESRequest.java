@@ -109,32 +109,32 @@ public class ESRequest {
 
 			searchRequestBuilder = transportClient.prepareSearch("post").setTypes("address");
 
-			if (region != null && !region.isEmpty()) {
+			if (region != null) {
 				QueryBuilder regionQb = QueryBuilders.matchQuery("region", region);
 				searchRequestBuilder = searchRequestBuilder.setQuery(regionQb);
 			}
 
-			if (district != null && !district.isEmpty()) {
+			if (district != null) {
 				QueryBuilder districtQb = QueryBuilders.matchQuery("district", district);
 				searchRequestBuilder = searchRequestBuilder.setQuery(districtQb);
 			}
 
-			if (city != null && !city.isEmpty()) {
+			if (city != null) {
 				QueryBuilder cityQb = QueryBuilders.matchQuery("city", city);
 				searchRequestBuilder = searchRequestBuilder.setQuery(cityQb);
 			}
 
-			if (postIndex != null && !postIndex.isEmpty()) {
+			if (postIndex != null) {
 				QueryBuilder postIndexQb = QueryBuilders.matchQuery("post_index", postIndex);
 				searchRequestBuilder = searchRequestBuilder.setQuery(postIndexQb);
 			}
 
-			if (street != null && !street.isEmpty()) {
+			if (street != null) {
 				QueryBuilder streetQb = QueryBuilders.matchQuery("street", street);
 				searchRequestBuilder = searchRequestBuilder.setQuery(streetQb);
 			}
 
-			if (house != null && !house.isEmpty()) {
+			if (house != null) {
 				QueryBuilder houseQb = QueryBuilders.matchQuery("house", house);
 				searchRequestBuilder = searchRequestBuilder.setQuery(houseQb);
 			}
