@@ -1,6 +1,8 @@
 package ua.com.platinumbank.controller;
 
-import static ua.com.platinumbank.util.JSONUtil.addressToJSON;
+// XXX for testing
+
+import static ua.com.platinumbank.util.JSONUtil.addressToJSONString;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -53,8 +55,9 @@ public class ESRequest {
 		}
 	}
 
-	@RequestMapping(value = "/req", method = RequestMethod.GET)
-	public @ResponseBody String getSearchResultsFromES(HttpServletRequest request,
+	// TODO add javadoc
+	@RequestMapping(value = "/match", method = RequestMethod.GET)
+	public @ResponseBody String getMatchSearchResultsFromES(HttpServletRequest request,
 			Address address) {
 
 		String region = request.getParameter("region");
@@ -66,14 +69,39 @@ public class ESRequest {
 		String house = request.getParameter("house");
 		String postIndex = request.getParameter("postIndex");
 
-		// Prepare response for html output
 		String response = queryMatch(region, district, cityType, city, streetType, street, house,
 				postIndex);
+
+		// Prepare response for html output
 		response = "<pre>" + response.replaceAll("<", "&lt;") + "</pre>";
 
 		return response;
 	}
 
+	// TODO add javadoc
+	@RequestMapping(value = "/term", method = RequestMethod.GET)
+	public @ResponseBody String getTermSearchResultsFromES(HttpServletRequest request,
+			Address address) {
+
+		String region = request.getParameter("region");
+		String district = request.getParameter("district");
+		String cityType = request.getParameter("cityType");
+		String city = request.getParameter("city");
+		String streetType = request.getParameter("streetType");
+		String street = request.getParameter("street");
+		String house = request.getParameter("house");
+		String postIndex = request.getParameter("postIndex");
+
+		String response = queryTerm(region, district, cityType, city, streetType, street, house,
+				postIndex);
+
+		// Prepare response for html output
+		response = "<pre>" + response.replaceAll("<", "&lt;") + "</pre>";
+
+		return response;
+	}
+
+	// TODO add javadoc
 	private static String queryMatch(String region, String district, String cityType, String city,
 			String streetType, String street, String house, String postIndex) {
 
@@ -89,42 +117,42 @@ public class ESRequest {
 
 			if (region != null) {
 				QueryBuilder regionQb = QueryBuilders.matchQuery("region", region);
-				searchRequestBuilder.setQuery(regionQb);
+				searchRequestBuilder = searchRequestBuilder.setQuery(regionQb);
 			}
 
 			if (district != null) {
 				QueryBuilder districtQb = QueryBuilders.matchQuery("district", district);
-				searchRequestBuilder.setQuery(districtQb);
+				searchRequestBuilder = searchRequestBuilder.setQuery(districtQb);
 			}
 
 			if (cityType != null) {
 				QueryBuilder cityTypeQb = QueryBuilders.matchQuery("city_type", cityType);
-				searchRequestBuilder.setQuery(cityTypeQb);
+				searchRequestBuilder = searchRequestBuilder.setQuery(cityTypeQb);
 			}
 
 			if (city != null) {
 				QueryBuilder cityQb = QueryBuilders.matchQuery("city", city);
-				searchRequestBuilder.setQuery(cityQb);
+				searchRequestBuilder = searchRequestBuilder.setQuery(cityQb);
 			}
 
 			if (streetType != null) {
 				QueryBuilder streetTypeQb = QueryBuilders.matchQuery("street_type", streetType);
-				searchRequestBuilder.setQuery(streetTypeQb);
+				searchRequestBuilder = searchRequestBuilder.setQuery(streetTypeQb);
 			}
 
 			if (street != null) {
 				QueryBuilder streetQb = QueryBuilders.matchQuery("street", street);
-				searchRequestBuilder.setQuery(streetQb);
+				searchRequestBuilder = searchRequestBuilder.setQuery(streetQb);
 			}
 
 			if (house != null) {
 				QueryBuilder houseQb = QueryBuilders.matchQuery("house", house);
-				searchRequestBuilder.setQuery(houseQb);
+				searchRequestBuilder = searchRequestBuilder.setQuery(houseQb);
 			}
 
 			if (postIndex != null) {
 				QueryBuilder postIndexQb = QueryBuilders.matchQuery("post_index", postIndex);
-				searchRequestBuilder.setQuery(postIndexQb);
+				searchRequestBuilder = searchRequestBuilder.setQuery(postIndexQb);
 			}
 
 			searchResponse = searchRequestBuilder.execute().actionGet();
@@ -134,6 +162,74 @@ public class ESRequest {
 			e.printStackTrace();
 		}
 
+		// XXX for testing
+		searchResponseToList(searchResponse);
+
+		return searchResponseToString(searchResponse);
+	}
+
+	// TODO add javadoc
+	private static String queryTerm(String region, String district, String cityType, String city,
+			String streetType, String street, String house, String postIndex) {
+
+		TransportClient transportClient;
+		SearchRequestBuilder searchRequestBuilder;
+		SearchResponse searchResponse = null;
+
+		try {
+			transportClient = new PreBuiltTransportClient(Settings.EMPTY).addTransportAddress(
+					new InetSocketTransportAddress(InetAddress.getByName(inetAddress), 9300));
+
+			searchRequestBuilder = transportClient.prepareSearch("post").setTypes("address");
+
+			if (region != null) {
+				QueryBuilder regionQb = QueryBuilders.termQuery("region.raw", region);
+				searchRequestBuilder = searchRequestBuilder.setQuery(regionQb);
+			}
+
+			if (district != null) {
+				QueryBuilder districtQb = QueryBuilders.termQuery("district.raw", district);
+				searchRequestBuilder = searchRequestBuilder.setQuery(districtQb);
+			}
+
+			if (cityType != null) {
+				QueryBuilder cityTypeQb = QueryBuilders.termQuery("city_type.raw", cityType);
+				searchRequestBuilder = searchRequestBuilder.setQuery(cityTypeQb);
+			}
+
+			if (city != null) {
+				QueryBuilder cityQb = QueryBuilders.termQuery("city.raw", city);
+				searchRequestBuilder = searchRequestBuilder.setQuery(cityQb);
+			}
+
+			if (streetType != null) {
+				QueryBuilder streetTypeQb = QueryBuilders.termQuery("street_type.raw", streetType);
+				searchRequestBuilder = searchRequestBuilder.setQuery(streetTypeQb);
+			}
+
+			if (street != null) {
+				QueryBuilder streetQb = QueryBuilders.termQuery("street.raw", street);
+				searchRequestBuilder = searchRequestBuilder.setQuery(streetQb);
+			}
+
+			if (house != null) {
+				QueryBuilder houseQb = QueryBuilders.termQuery("house.raw", house);
+				searchRequestBuilder = searchRequestBuilder.setQuery(houseQb);
+			}
+
+			if (postIndex != null) {
+				QueryBuilder postIndexQb = QueryBuilders.termQuery("post_index.raw", postIndex);
+				searchRequestBuilder = searchRequestBuilder.setQuery(postIndexQb);
+			}
+
+			searchResponse = searchRequestBuilder.execute().actionGet();
+
+		} catch (UnknownHostException e) {
+			// TODO replace with logging
+			e.printStackTrace();
+		}
+
+		// XXX for testing
 		searchResponseToList(searchResponse);
 
 		return searchResponseToString(searchResponse);
@@ -206,8 +302,9 @@ public class ESRequest {
 			resultList.add(i, address);
 		}
 
+		// XXX for testing
 		for (Address a : resultList) {
-			addressToJSON(a);
+			addressToJSONString(a);
 		}
 
 		return resultList;
