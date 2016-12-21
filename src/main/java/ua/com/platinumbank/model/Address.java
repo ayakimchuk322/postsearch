@@ -22,7 +22,7 @@ public class Address {
 
 	public Address setRegion(String region) {
 
-		this.region = region;
+		this.region = region != null ? region : "";
 		return this;
 	}
 
@@ -33,7 +33,7 @@ public class Address {
 
 	public Address setDistrict(String district) {
 
-		this.district = district;
+		this.district = district != null ? district : "";
 		return this;
 	}
 
@@ -44,7 +44,7 @@ public class Address {
 
 	public Address setCityType(String cityType) {
 
-		this.cityType = cityType;
+		this.cityType = cityType != null ? cityType : "";
 		return this;
 	}
 
@@ -55,7 +55,7 @@ public class Address {
 
 	public Address setCity(String city) {
 
-		this.city = city;
+		this.city = city != null ? city : "";
 		return this;
 	}
 
@@ -66,7 +66,7 @@ public class Address {
 
 	public Address setStreetType(String streetType) {
 
-		this.streetType = streetType;
+		this.streetType = streetType != null ? streetType : "";
 		return this;
 	}
 
@@ -77,7 +77,7 @@ public class Address {
 
 	public Address setStreet(String street) {
 
-		this.street = street;
+		this.street = street != null ? street : "";
 		return this;
 	}
 
@@ -88,7 +88,7 @@ public class Address {
 
 	public Address setHouse(String house) {
 
-		this.house = house;
+		this.house = house != null ? house : "";
 		return this;
 	}
 
@@ -99,14 +99,14 @@ public class Address {
 
 	public Address setPostIndex(String postIndex) {
 
-		this.postIndex = postIndex;
+		this.postIndex = postIndex != null ? postIndex : "";
 		return this;
 	}
 
-    @Override
-    public String toString() {
+	@Override
+	public String toString() {
 
-        // @formatter:off
+		// @formatter:off
         return "Address{" +
             "region='" + region + '\'' +
             ", district='" + district + '\'' +
@@ -118,5 +118,5 @@ public class Address {
             ", postIndex='" + postIndex + '\'' +
             '}';
         // @formatter:on
-    }
+	}
 }
