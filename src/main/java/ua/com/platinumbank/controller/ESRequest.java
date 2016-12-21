@@ -107,7 +107,7 @@ public class ESRequest {
 			transportClient = new PreBuiltTransportClient(Settings.EMPTY).addTransportAddress(
 					new InetSocketTransportAddress(InetAddress.getByName(inetAddress), 9300));
 
-			searchRequestBuilder = transportClient.prepareSearch("post").setTypes("address");
+			searchRequestBuilder = transportClient.prepareSearch("logstash-post").setTypes("address");
 
 			if (region != null && !region.isEmpty()) {
 				QueryBuilder regionQb = QueryBuilders.matchQuery("region", region);
@@ -164,35 +164,36 @@ public class ESRequest {
 			transportClient = new PreBuiltTransportClient(Settings.EMPTY).addTransportAddress(
 					new InetSocketTransportAddress(InetAddress.getByName(inetAddress), 9300));
 
-			searchRequestBuilder = transportClient.prepareSearch("post").setTypes("address");
+			searchRequestBuilder = transportClient.prepareSearch("logstash-post").setTypes
+				("address");
 
-			if (region != null) {
-				QueryBuilder regionQb = QueryBuilders.termQuery("region.raw", region);
+			if (region != null && !region.isEmpty()) {
+				QueryBuilder regionQb = QueryBuilders.termQuery("region.keyword", region);
 				searchRequestBuilder = searchRequestBuilder.setQuery(regionQb);
 			}
 
-			if (district != null) {
-				QueryBuilder districtQb = QueryBuilders.termQuery("district.raw", district);
+			if (district != null && !district.isEmpty()) {
+				QueryBuilder districtQb = QueryBuilders.termQuery("district.keyword", district);
 				searchRequestBuilder = searchRequestBuilder.setQuery(districtQb);
 			}
 
-			if (city != null) {
-				QueryBuilder cityQb = QueryBuilders.termQuery("city.raw", city);
+			if (city != null && !city.isEmpty()) {
+				QueryBuilder cityQb = QueryBuilders.termQuery("city.keyword", city);
 				searchRequestBuilder = searchRequestBuilder.setQuery(cityQb);
 			}
 
-			if (postIndex != null) {
-				QueryBuilder postIndexQb = QueryBuilders.termQuery("post_index.raw", postIndex);
+			if (postIndex != null && !postIndex.isEmpty()) {
+				QueryBuilder postIndexQb = QueryBuilders.termQuery("post_index.keyword", postIndex);
 				searchRequestBuilder = searchRequestBuilder.setQuery(postIndexQb);
 			}
 
-			if (street != null) {
-				QueryBuilder streetQb = QueryBuilders.termQuery("street.raw", street);
+			if (street != null && !street.isEmpty()) {
+				QueryBuilder streetQb = QueryBuilders.termQuery("street.keyword", street);
 				searchRequestBuilder = searchRequestBuilder.setQuery(streetQb);
 			}
 
-			if (house != null) {
-				QueryBuilder houseQb = QueryBuilders.termQuery("house.raw", house);
+			if (house != null && !house.isEmpty()) {
+				QueryBuilder houseQb = QueryBuilders.termQuery("house.keyword", house);
 				searchRequestBuilder = searchRequestBuilder.setQuery(houseQb);
 			}
 
