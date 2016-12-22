@@ -1,7 +1,5 @@
 package ua.com.platinumbank.controller;
 
-// XXX for testing
-
 import static ua.com.platinumbank.util.SearchUtil.searchResponseToList;
 import static ua.com.platinumbank.util.SearchUtil.searchResponseToString;
 
@@ -53,7 +51,7 @@ public class ESRequest {
 	}
 
 	// TODO add javadoc
-	@RequestMapping(value = "/match", method = RequestMethod.GET)
+	@RequestMapping(value = "/getmatch", method = RequestMethod.GET)
 	public @ResponseBody String getMatchSearchResultsFromES(HttpServletRequest request,
 			Address address) {
 
@@ -72,8 +70,24 @@ public class ESRequest {
 		return response;
 	}
 
+	/**
+	 * Convenient method to call same match query with POST request.
+	 * 
+	 * @param request
+	 *            {@link HttpServletRequest}
+	 * @param address
+	 *            {@link Address}
+	 * @return // TODO add return text
+	 */
+	@RequestMapping(value = "/postmatch", method = RequestMethod.POST)
+	public @ResponseBody String postMatchSearchResultsFromES(HttpServletRequest request,
+			Address address) {
+
+		return getMatchSearchResultsFromES(request, address);
+	}
+
 	// TODO add javadoc
-	@RequestMapping(value = "/term", method = RequestMethod.GET)
+	@RequestMapping(value = "/getterm", method = RequestMethod.GET)
 	public @ResponseBody String getTermSearchResultsFromES(HttpServletRequest request,
 			Address address) {
 
@@ -90,6 +104,22 @@ public class ESRequest {
 		response = "<pre>" + response.replaceAll("<", "&lt;") + "</pre>";
 
 		return response;
+	}
+
+	/**
+	 * Convenient method to call same term query with POST request.
+	 *
+	 * @param request
+	 *            {@link HttpServletRequest}
+	 * @param address
+	 *            {@link Address}
+	 * @return // TODO add return text
+	 */
+	@RequestMapping(value = "/postterm", method = RequestMethod.POST)
+	public @ResponseBody String postTermSearchResultsFromES(HttpServletRequest request,
+			Address address) {
+
+		return getTermSearchResultsFromES(request, address);
 	}
 
 	// TODO add javadoc
