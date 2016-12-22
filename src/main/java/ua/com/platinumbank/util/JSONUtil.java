@@ -1,6 +1,7 @@
 package ua.com.platinumbank.util;
 
 import java.io.IOException;
+import java.util.List;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,6 +27,29 @@ public class JSONUtil {
         }
 
         return jsonAddress;
+    }
+
+    public static String addressListToJSONString(List<Address> addresses) {
+
+        StringBuilder jsonAddresses = new StringBuilder();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectWriter objectWriter = objectMapper.writerWithDefaultPrettyPrinter();
+
+        try {
+            jsonAddresses.append("{")
+                         .append(System.lineSeparator())
+                         .append("\"addresses\" : ")
+                         .append(System.lineSeparator())
+                         .append(objectWriter.writeValueAsString(addresses))
+                         .append(System.lineSeparator())
+                         .append("}");
+        } catch (JsonProcessingException e) {
+            // TODO replace with logging
+            e.printStackTrace();
+        }
+
+        return jsonAddresses.toString();
     }
 
     // TODO add javadoc
