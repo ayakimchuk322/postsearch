@@ -2,15 +2,13 @@ package ua.com.platinumbank.controller;
 
 // XXX for testing
 
-import static ua.com.platinumbank.util.JSONUtil.addressToJSONString;
+import static ua.com.platinumbank.util.SearchUtil.searchResponseToList;
+import static ua.com.platinumbank.util.SearchUtil.searchResponseToString;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 import javax.servlet.http.HttpServletRequest;
@@ -22,7 +20,6 @@ import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -107,7 +104,8 @@ public class ESRequest {
 			transportClient = new PreBuiltTransportClient(Settings.EMPTY).addTransportAddress(
 					new InetSocketTransportAddress(InetAddress.getByName(inetAddress), 9300));
 
-			searchRequestBuilder = transportClient.prepareSearch("logstash-post").setTypes("address");
+			searchRequestBuilder = transportClient.prepareSearch("logstash-post")
+					.setTypes("address");
 
 			if (region != null && !region.isEmpty()) {
 				QueryBuilder regionQb = QueryBuilders.matchQuery("region", region);
@@ -164,8 +162,8 @@ public class ESRequest {
 			transportClient = new PreBuiltTransportClient(Settings.EMPTY).addTransportAddress(
 					new InetSocketTransportAddress(InetAddress.getByName(inetAddress), 9300));
 
-			searchRequestBuilder = transportClient.prepareSearch("logstash-post").setTypes
-				("address");
+			searchRequestBuilder = transportClient.prepareSearch("logstash-post")
+					.setTypes("address");
 
 			if (region != null && !region.isEmpty()) {
 				QueryBuilder regionQb = QueryBuilders.termQuery("region.keyword", region);
@@ -208,77 +206,6 @@ public class ESRequest {
 		searchResponseToList(searchResponse);
 
 		return searchResponseToString(searchResponse);
-	}
-
-	/**
-	 * Prints all search results as is.
-	 * 
-	 * @param searchResponse
-	 *            {@link SearchResponse} from ElasticSearch
-	 * @return {@link String} representing this search response
-	 */
-	private static String searchResponseToString(SearchResponse searchResponse) {
-
-		StringBuilder result = new StringBuilder();
-
-		SearchHit[] hits = searchResponse.getHits().getHits();
-
-		for (int i = 0; i < hits.length; i++) {
-			result.append(hits[i].getId());
-			result.append("\n");
-			result.append(hits[i].getSourceAsString());
-			result.append("\n");
-		}
-
-		return result.toString();
-	}
-
-	/**
-	 * Parses {@link SearchResponse} and returns {@link List} filled with
-	 * corresponding {@link Address} objects.
-	 * 
-	 * @param searchResponse
-	 *            {@link SearchResponse} from ElasticSearch
-	 * @return {@link List} with {@link Address} objects
-	 */
-	private static List<Address> searchResponseToList(SearchResponse searchResponse) {
-
-		List<Address> resultList;
-		Map resultSourceMap;
-
-		SearchHit[] hits = searchResponse.getHits().getHits();
-
-		resultList = new ArrayList(hits.length);
-
-		for (int i = 0; i < hits.length; i++) {
-
-			resultSourceMap = hits[i].sourceAsMap();
-
-			Address address = new Address();
-
-			String region = (String) resultSourceMap.get("region");
-			String district = (String) resultSourceMap.get("district");
-			String city = (String) resultSourceMap.get("city");
-			String postIndex = (String) resultSourceMap.get("post_index");
-			String street = (String) resultSourceMap.get("street");
-			String house = (String) resultSourceMap.get("house");
-
-			address.setRegion(region);
-			address.setDistrict(district);
-			address.setCity(city);
-			address.setPostIndex(postIndex);
-			address.setStreet(street);
-			address.setHouse(house);
-
-			resultList.add(i, address);
-		}
-
-		// XXX for testing
-		for (Address a : resultList) {
-			addressToJSONString(a);
-		}
-
-		return resultList;
 	}
 
 }
