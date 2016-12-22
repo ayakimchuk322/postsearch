@@ -1,6 +1,6 @@
 package ua.com.platinumbank.controller;
 
-import static ua.com.platinumbank.util.SearchUtil.searchResponseToList;
+import static ua.com.platinumbank.util.JSONUtil.parseJsonString;
 import static ua.com.platinumbank.util.SearchUtil.searchResponseToString;
 
 import java.io.IOException;
@@ -20,6 +20,7 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -54,8 +55,7 @@ public class ESRequest {
 
     // TODO add javadoc
     @RequestMapping(value = "/getmatch", method = RequestMethod.GET)
-    public @ResponseBody String getMatchSearchResultsFromES(HttpServletRequest request,
-        Address address) {
+    public @ResponseBody String getMatchSearchResultsFromES(HttpServletRequest request) {
 
         String region = request.getParameter("region");
         String district = request.getParameter("district");
@@ -64,12 +64,7 @@ public class ESRequest {
         String street = request.getParameter("street");
         String house = request.getParameter("house");
 
-        String response = queryMatch(region, district, city, postIndex, street, house);
-
-        // Prepare response for html output
-        response = "<pre>" + response.replaceAll("<", "&lt;") + "</pre>";
-
-        return response;
+        return queryMatch(region, district, city, postIndex, street, house);
     }
 
     /**
@@ -85,13 +80,12 @@ public class ESRequest {
     public @ResponseBody String postMatchSearchResultsFromES(HttpServletRequest request,
         Address address) {
 
-        return getMatchSearchResultsFromES(request, address);
+        return getMatchSearchResultsFromES(request);
     }
 
     // TODO add javadoc
     @RequestMapping(value = "/getterm", method = RequestMethod.GET)
-    public @ResponseBody String getTermSearchResultsFromES(HttpServletRequest request,
-        Address address) {
+    public @ResponseBody String getTermSearchResultsFromES(HttpServletRequest request) {
 
         String region = request.getParameter("region");
         String district = request.getParameter("district");
@@ -100,12 +94,7 @@ public class ESRequest {
         String street = request.getParameter("street");
         String house = request.getParameter("house");
 
-        String response = queryTerm(region, district, city, postIndex, street, house);
-
-        // Prepare response for html output
-        response = "<pre>" + response.replaceAll("<", "&lt;") + "</pre>";
-
-        return response;
+        return queryTerm(region, district, city, postIndex, street, house);
     }
 
     /**
@@ -121,7 +110,45 @@ public class ESRequest {
     public @ResponseBody String postTermSearchResultsFromES(HttpServletRequest request,
         Address address) {
 
-        return getTermSearchResultsFromES(request, address);
+        return getTermSearchResultsFromES(request);
+    }
+
+    // TODO add javadoc
+    @RequestMapping(value = "/jsonpostmatch", method = RequestMethod.POST, headers = "Content-Type=application/json")
+    public @ResponseBody String jsonPostMatchSearchResultsFromES(@RequestBody String jsonRequest) {
+
+        Address addressRequest = parseJsonString(jsonRequest);
+
+        // XXX for testing
+        System.out.println(addressRequest);
+
+        String region = addressRequest.getRegion();
+        String district = addressRequest.getDistrict();
+        String city = addressRequest.getCity();
+        String postIndex = addressRequest.getPostIndex();
+        String street = addressRequest.getStreet();
+        String house = addressRequest.getHouseRequest();
+
+        return queryMatch(region, district, city, postIndex, street, house);
+    }
+
+    // TODO add javadoc
+    @RequestMapping(value = "/jsonpostterm", method = RequestMethod.POST, headers = "Content-Type=application/json")
+    public @ResponseBody String jsonPostTermSearchResultsFromES(@RequestBody String jsonRequest) {
+
+        Address addressRequest = parseJsonString(jsonRequest);
+
+        // XXX for testing
+        System.out.println(addressRequest);
+
+        String region = addressRequest.getRegion();
+        String district = addressRequest.getDistrict();
+        String city = addressRequest.getCity();
+        String postIndex = addressRequest.getPostIndex();
+        String street = addressRequest.getStreet();
+        String house = addressRequest.getHouseRequest();
+
+        return queryTerm(region, district, city, postIndex, street, house);
     }
 
     // TODO add javadoc
@@ -195,9 +222,6 @@ public class ESRequest {
             // TODO replace with logging
             e.printStackTrace();
         }
-
-        // XXX for testing
-        searchResponseToList(searchResponse);
 
         return searchResponseToString(searchResponse);
     }
@@ -273,9 +297,6 @@ public class ESRequest {
             // TODO replace with logging
             e.printStackTrace();
         }
-
-        // XXX for testing
-        searchResponseToList(searchResponse);
 
         return searchResponseToString(searchResponse);
     }
