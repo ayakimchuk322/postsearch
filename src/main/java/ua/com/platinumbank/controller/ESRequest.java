@@ -107,35 +107,34 @@ public class ESRequest {
 			transportClient = new PreBuiltTransportClient(Settings.EMPTY).addTransportAddress(
 					new InetSocketTransportAddress(InetAddress.getByName(inetAddress), 9300));
 
-			searchRequestBuilder = transportClient.prepareSearch("logstash-post")
-					.setTypes("address");
+			searchRequestBuilder = transportClient.prepareSearch("logstash-post").setTypes("address");
 
-			if (!region.isEmpty() && region != null) {
+			if (region != null && !region.isEmpty()) {
 				QueryBuilder regionQb = QueryBuilders.matchQuery("region", region);
 				searchRequestBuilder = searchRequestBuilder.setQuery(regionQb);
 			}
 
-			if (!district.isEmpty() && district != null) {
+			if (district != null && !district.isEmpty()) {
 				QueryBuilder districtQb = QueryBuilders.matchQuery("district", district);
 				searchRequestBuilder = searchRequestBuilder.setQuery(districtQb);
 			}
 
-			if (!city.isEmpty() && city != null) {
+			if (city != null && !city.isEmpty()) {
 				QueryBuilder cityQb = QueryBuilders.matchQuery("city", city);
 				searchRequestBuilder = searchRequestBuilder.setQuery(cityQb);
 			}
 
-			if (!postIndex.isEmpty() && postIndex != null) {
+			if (postIndex != null && !postIndex.isEmpty()) {
 				QueryBuilder postIndexQb = QueryBuilders.matchQuery("post_index", postIndex);
 				searchRequestBuilder = searchRequestBuilder.setQuery(postIndexQb);
 			}
 
-			if (!street.isEmpty() && street != null) {
+			if (street != null && !street.isEmpty()) {
 				QueryBuilder streetQb = QueryBuilders.matchQuery("street", street);
 				searchRequestBuilder = searchRequestBuilder.setQuery(streetQb);
 			}
 
-			if (!house.isEmpty() && house != null) {
+			if (house != null && !house.isEmpty()) {
 				QueryBuilder houseQb = QueryBuilders.matchQuery("house", house);
 				searchRequestBuilder = searchRequestBuilder.setQuery(houseQb);
 			}
@@ -165,35 +164,35 @@ public class ESRequest {
 			transportClient = new PreBuiltTransportClient(Settings.EMPTY).addTransportAddress(
 					new InetSocketTransportAddress(InetAddress.getByName(inetAddress), 9300));
 
-			searchRequestBuilder = transportClient.prepareSearch("logstash-post")
-					.setTypes("address");
+			searchRequestBuilder = transportClient.prepareSearch("logstash-post").setTypes
+				("address");
 
-			if (!region.isEmpty() && region != null) {
+			if (region != null && !region.isEmpty()) {
 				QueryBuilder regionQb = QueryBuilders.termQuery("region.keyword", region);
 				searchRequestBuilder = searchRequestBuilder.setQuery(regionQb);
 			}
 
-			if (!district.isEmpty() && district != null) {
+			if (district != null && !district.isEmpty()) {
 				QueryBuilder districtQb = QueryBuilders.termQuery("district.keyword", district);
 				searchRequestBuilder = searchRequestBuilder.setQuery(districtQb);
 			}
 
-			if (!city.isEmpty() && city != null) {
+			if (city != null && !city.isEmpty()) {
 				QueryBuilder cityQb = QueryBuilders.termQuery("city.keyword", city);
 				searchRequestBuilder = searchRequestBuilder.setQuery(cityQb);
 			}
 
-			if (!postIndex.isEmpty() && postIndex != null) {
+			if (postIndex != null && !postIndex.isEmpty()) {
 				QueryBuilder postIndexQb = QueryBuilders.termQuery("post_index.keyword", postIndex);
 				searchRequestBuilder = searchRequestBuilder.setQuery(postIndexQb);
 			}
 
-			if (!street.isEmpty() && street != null) {
+			if (street != null && !street.isEmpty()) {
 				QueryBuilder streetQb = QueryBuilders.termQuery("street.keyword", street);
 				searchRequestBuilder = searchRequestBuilder.setQuery(streetQb);
 			}
 
-			if (!house.isEmpty() && house != null) {
+			if (house != null && !house.isEmpty()) {
 				QueryBuilder houseQb = QueryBuilders.termQuery("house.keyword", house);
 				searchRequestBuilder = searchRequestBuilder.setQuery(houseQb);
 			}
