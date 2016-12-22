@@ -12,7 +12,12 @@ public class Address {
     private String[] house;
 
     public Address() {
-
+        this.region = "";
+        this.district = "";
+        this.city = "";
+        this.postIndex = "";
+        this.street = "";
+        this.house = new String[0];
     }
 
     public String getRegion() {

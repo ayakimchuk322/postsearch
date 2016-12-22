@@ -1,5 +1,6 @@
 package ua.com.platinumbank.controller;
 
+import static ua.com.platinumbank.util.JSONUtil.addressToJSONString;
 import static ua.com.platinumbank.util.JSONUtil.parseJsonString;
 import static ua.com.platinumbank.util.SearchUtil.searchResponseToString;
 
@@ -42,7 +43,7 @@ public class ElasticSearchRequestController {
 
         try (InputStream propertiesIn = ElasticSearchRequestController.class.getClassLoader()
                                                                             .getResourceAsStream(
-                                                           "properties.properties")) {
+                                                                                "properties.properties")) {
 
             properties.load(propertiesIn);
 
@@ -57,14 +58,23 @@ public class ElasticSearchRequestController {
     @RequestMapping(value = "/getmatch", method = RequestMethod.GET)
     public @ResponseBody String getMatchSearchResultsFromES(HttpServletRequest request) {
 
-        String region = request.getParameter("region");
-        String district = request.getParameter("district");
-        String city = request.getParameter("city");
-        String postIndex = request.getParameter("postIndex");
-        String street = request.getParameter("street");
-        String house = request.getParameter("house");
+        String response;
 
-        return queryMatch(region, district, city, postIndex, street, house);
+        try {
+            String region = request.getParameter("region");
+            String district = request.getParameter("district");
+            String city = request.getParameter("city");
+            String postIndex = request.getParameter("postIndex");
+            String street = request.getParameter("street");
+            String house = request.getParameter("house");
+
+            response = queryMatch(region, district, city, postIndex, street, house);
+        } catch (Exception e) {
+            // In case of any exception return to caller empty json address
+            response = addressToJSONString(new Address());
+        }
+
+        return response;
     }
 
     /**
@@ -72,13 +82,10 @@ public class ElasticSearchRequestController {
      *
      * @param request
      *            {@link HttpServletRequest}
-     * @param address
-     *            {@link Address}
      * @return // TODO add return text
      */
     @RequestMapping(value = "/postmatch", method = RequestMethod.POST)
-    public @ResponseBody String postMatchSearchResultsFromES(HttpServletRequest request,
-        Address address) {
+    public @ResponseBody String postMatchSearchResultsFromES(HttpServletRequest request) {
 
         return getMatchSearchResultsFromES(request);
     }
@@ -87,14 +94,23 @@ public class ElasticSearchRequestController {
     @RequestMapping(value = "/getterm", method = RequestMethod.GET)
     public @ResponseBody String getTermSearchResultsFromES(HttpServletRequest request) {
 
-        String region = request.getParameter("region");
-        String district = request.getParameter("district");
-        String city = request.getParameter("city");
-        String postIndex = request.getParameter("postIndex");
-        String street = request.getParameter("street");
-        String house = request.getParameter("house");
+        String response;
 
-        return queryTerm(region, district, city, postIndex, street, house);
+        try {
+            String region = request.getParameter("region");
+            String district = request.getParameter("district");
+            String city = request.getParameter("city");
+            String postIndex = request.getParameter("postIndex");
+            String street = request.getParameter("street");
+            String house = request.getParameter("house");
+
+            response = queryTerm(region, district, city, postIndex, street, house);
+        } catch (Exception e) {
+            // In case of any exception return to caller empty json address
+            response = addressToJSONString(new Address());
+        }
+
+        return response;
     }
 
     /**
@@ -102,13 +118,10 @@ public class ElasticSearchRequestController {
      *
      * @param request
      *            {@link HttpServletRequest}
-     * @param address
-     *            {@link Address}
      * @return // TODO add return text
      */
     @RequestMapping(value = "/postterm", method = RequestMethod.POST)
-    public @ResponseBody String postTermSearchResultsFromES(HttpServletRequest request,
-        Address address) {
+    public @ResponseBody String postTermSearchResultsFromES(HttpServletRequest request) {
 
         return getTermSearchResultsFromES(request);
     }
@@ -117,32 +130,50 @@ public class ElasticSearchRequestController {
     @RequestMapping(value = "/jsonpostmatch", method = RequestMethod.POST, headers = "Content-Type=application/json")
     public @ResponseBody String jsonPostMatchSearchResultsFromES(@RequestBody String jsonRequest) {
 
-        Address addressRequest = parseJsonString(jsonRequest);
+        String response;
 
-        String region = addressRequest.getRegion();
-        String district = addressRequest.getDistrict();
-        String city = addressRequest.getCity();
-        String postIndex = addressRequest.getPostIndex();
-        String street = addressRequest.getStreet();
-        String house = addressRequest.getHouseRequest();
+        try {
+            Address addressRequest = parseJsonString(jsonRequest);
 
-        return queryMatch(region, district, city, postIndex, street, house);
+            String region = addressRequest.getRegion();
+            String district = addressRequest.getDistrict();
+            String city = addressRequest.getCity();
+            String postIndex = addressRequest.getPostIndex();
+            String street = addressRequest.getStreet();
+            String house = addressRequest.getHouseRequest();
+
+            response = queryMatch(region, district, city, postIndex, street, house);
+        } catch (Exception e) {
+            // In case of any exception return to caller empty json address
+            response = addressToJSONString(new Address());
+        }
+
+        return response;
     }
 
     // TODO add javadoc
     @RequestMapping(value = "/jsonpostterm", method = RequestMethod.POST, headers = "Content-Type=application/json")
     public @ResponseBody String jsonPostTermSearchResultsFromES(@RequestBody String jsonRequest) {
 
-        Address addressRequest = parseJsonString(jsonRequest);
+        String response;
 
-        String region = addressRequest.getRegion();
-        String district = addressRequest.getDistrict();
-        String city = addressRequest.getCity();
-        String postIndex = addressRequest.getPostIndex();
-        String street = addressRequest.getStreet();
-        String house = addressRequest.getHouseRequest();
+        try {
+            Address addressRequest = parseJsonString(jsonRequest);
 
-        return queryTerm(region, district, city, postIndex, street, house);
+            String region = addressRequest.getRegion();
+            String district = addressRequest.getDistrict();
+            String city = addressRequest.getCity();
+            String postIndex = addressRequest.getPostIndex();
+            String street = addressRequest.getStreet();
+            String house = addressRequest.getHouseRequest();
+
+            response = queryTerm(region, district, city, postIndex, street, house);
+        } catch (Exception e) {
+            // In case of any exception return to caller empty json address
+            response = addressToJSONString(new Address());
+        }
+
+        return response;
     }
 
     // TODO add javadoc
