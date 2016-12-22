@@ -178,9 +178,10 @@ public class ESRequest {
                 boolQueryBuilder = boolQueryBuilder.must(streetQb);
             }
 
+            // For house field use wild card query instead of term because house
+            // numbers stored all in one field separated by commas
             if (house != null && !house.isEmpty()) {
-                QueryBuilder houseQb = QueryBuilders.matchQuery("house", house)
-                                                    .boost(1.1f);
+                QueryBuilder houseQb = QueryBuilders.wildcardQuery("house", "*" + house + "*");
 
                 boolQueryBuilder = boolQueryBuilder.must(houseQb);
             }
@@ -255,9 +256,10 @@ public class ESRequest {
                 boolQueryBuilder = boolQueryBuilder.must(streetQb);
             }
 
+            // For house field use wild card query instead of term because house
+            // numbers stored all in one field separated by commas
             if (house != null && !house.isEmpty()) {
-                QueryBuilder houseQb = QueryBuilders.termQuery("house.keyword", house)
-                                                    .boost(1.1f);
+                QueryBuilder houseQb = QueryBuilders.wildcardQuery("house", "*" + house + "*");
 
                 boolQueryBuilder = boolQueryBuilder.must(houseQb);
             }
