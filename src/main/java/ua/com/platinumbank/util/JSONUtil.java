@@ -14,9 +14,13 @@ import ua.com.platinumbank.model.Address;
  */
 public class JSONUtil {
 
+    private JSONUtil() {
+
+    }
+
     /**
      * Transforms single {@link Address} into {@code JSON} String.
-     * 
+     *
      * @param address
      *            {@link Address} instance
      * @return {@code JSON} {@link String} representing single {@link Address} instance.
@@ -70,7 +74,7 @@ public class JSONUtil {
 
     /**
      * Parses {@code JSON} string from caller into single {@link Address} object.
-     * 
+     *
      * @param jsonString
      *            {@code JSON} request {@link String} from caller
      * @return {@link Address} object representing this {@code JSON} request.

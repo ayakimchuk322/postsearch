@@ -16,6 +16,10 @@ import ua.com.platinumbank.model.Address;
  */
 public class SearchUtil {
 
+    private SearchUtil() {
+
+    }
+
     /**
      * Parses {@link SearchResponse} and returns {@code JSON} {@link String} with all concatenated
      * corresponding {@link Address} objects.
@@ -52,7 +56,7 @@ public class SearchUtil {
         SearchHit[] hits = searchResponse.getHits()
                                          .getHits();
 
-        resultList = new ArrayList(hits.length);
+        resultList = new ArrayList<>(hits.length);
 
         for (int i = 0; i < hits.length; i++) {
 

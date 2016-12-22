@@ -37,22 +37,22 @@ import ua.com.platinumbank.model.Address;
 @RequestMapping(value = "/es")
 public class ElasticsearchRequestController {
 
-    private static Properties properties;
+    private static final Properties PROPERTIES;
 
     // Contains Elasticsearch cluster ip
     private static String inetAddress;
 
     // Load properties file with connection specific information
     static {
-        properties = new Properties();
+        PROPERTIES = new Properties();
 
         try (InputStream propertiesIn = ElasticsearchRequestController.class.getClassLoader()
                                                                             .getResourceAsStream(
                                                                                 "properties.properties")) {
 
-            properties.load(propertiesIn);
+            PROPERTIES.load(propertiesIn);
 
-            inetAddress = properties.getProperty("inetaddress");
+            inetAddress = PROPERTIES.getProperty("inetaddress");
         } catch (IOException e) {
             // TODO replace with logging
             e.printStackTrace();
@@ -61,7 +61,7 @@ public class ElasticsearchRequestController {
 
     /**
      * Calls match query with parameters obtained from {@code GET} request.
-     * 
+     *
      * @param request
      *            {@link HttpServletRequest} from caller
      * @return {@code JSON} {@link String} with searched {@link Address} objects. In case of any
@@ -105,7 +105,7 @@ public class ElasticsearchRequestController {
 
     /**
      * Calls term query with parameters obtained from {@code GET} request.
-     * 
+     *
      * @param request
      *            {@link HttpServletRequest} from caller
      * @return {@code JSON} {@link String} with searched {@link Address} objects. In case of any
@@ -149,7 +149,7 @@ public class ElasticsearchRequestController {
 
     /**
      * Calls match query with {@code JSON} request obtained from {@code POST} request.
-     * 
+     *
      * @param jsonRequest
      *            {@code JSON} {@link String} with request from caller
      * @return {@code JSON} {@link String} with searched {@link Address} objects. In case of any
@@ -214,7 +214,7 @@ public class ElasticsearchRequestController {
     /**
      * Executes match query with specified parameters. Each parameter gets score boost depending on
      * it's scale in address. If any parameter is empty or {@code null} it won't be queried by.
-     * 
+     *
      * @param region
      * @param district
      * @param city

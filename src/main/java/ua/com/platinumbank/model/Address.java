@@ -7,7 +7,7 @@ import java.util.Arrays;
  */
 public class Address {
 
-    private static Address emptyAddress;
+    private static final Address EMPTY_ADDRESS;
 
     private String region;
     private String district;
@@ -20,7 +20,7 @@ public class Address {
     // This instance will be returned to caller instead of actual search results in case of any
     // error during search
     static {
-        emptyAddress = new Address();
+        EMPTY_ADDRESS = new Address();
     }
 
     public Address() {
@@ -118,7 +118,7 @@ public class Address {
     // Returns empty instance
     public static Address getEmptyAddress() {
 
-        return emptyAddress;
+        return EMPTY_ADDRESS;
     }
 
     @Override
