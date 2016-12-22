@@ -1,5 +1,6 @@
 package ua.com.platinumbank.controller;
 
+import static ua.com.platinumbank.model.Address.getEmptyAddress;
 import static ua.com.platinumbank.util.JSONUtil.addressToJSONString;
 import static ua.com.platinumbank.util.JSONUtil.parseJsonString;
 import static ua.com.platinumbank.util.SearchUtil.searchResponseToString;
@@ -71,7 +72,7 @@ public class ElasticSearchRequestController {
             response = queryMatch(region, district, city, postIndex, street, house);
         } catch (Exception e) {
             // In case of any exception return to caller empty json address
-            response = addressToJSONString(new Address());
+            response = addressToJSONString(getEmptyAddress());
         }
 
         return response;
@@ -107,7 +108,7 @@ public class ElasticSearchRequestController {
             response = queryTerm(region, district, city, postIndex, street, house);
         } catch (Exception e) {
             // In case of any exception return to caller empty json address
-            response = addressToJSONString(new Address());
+            response = addressToJSONString(getEmptyAddress());
         }
 
         return response;
@@ -145,7 +146,7 @@ public class ElasticSearchRequestController {
             response = queryMatch(region, district, city, postIndex, street, house);
         } catch (Exception e) {
             // In case of any exception return to caller empty json address
-            response = addressToJSONString(new Address());
+            response = addressToJSONString(getEmptyAddress());
         }
 
         return response;
@@ -170,7 +171,7 @@ public class ElasticSearchRequestController {
             response = queryTerm(region, district, city, postIndex, street, house);
         } catch (Exception e) {
             // In case of any exception return to caller empty json address
-            response = addressToJSONString(new Address());
+            response = addressToJSONString(getEmptyAddress());
         }
 
         return response;

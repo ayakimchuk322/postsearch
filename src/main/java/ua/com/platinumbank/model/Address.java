@@ -4,12 +4,18 @@ import java.util.Arrays;
 
 public class Address {
 
+    private static Address emptyAddress;
+
     private String region;
     private String district;
     private String city;
     private String postIndex;
     private String street;
     private String[] house;
+
+    static {
+        emptyAddress = new Address();
+    }
 
     public Address() {
         this.region = "";
@@ -100,6 +106,11 @@ public class Address {
         }
 
         return this;
+    }
+
+    public static Address getEmptyAddress() {
+
+        return emptyAddress;
     }
 
     @Override
