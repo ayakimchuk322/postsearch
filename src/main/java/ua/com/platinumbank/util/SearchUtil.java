@@ -56,9 +56,6 @@ public class SearchUtil {
             resultString.append(System.lineSeparator());
         }
 
-        // XXX for testing
-        System.out.println(resultString);
-
         return resultString.toString();
     }
 

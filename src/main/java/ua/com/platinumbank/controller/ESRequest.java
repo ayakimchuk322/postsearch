@@ -119,9 +119,6 @@ public class ESRequest {
 
         Address addressRequest = parseJsonString(jsonRequest);
 
-        // XXX for testing
-        System.out.println(addressRequest);
-
         String region = addressRequest.getRegion();
         String district = addressRequest.getDistrict();
         String city = addressRequest.getCity();
@@ -137,9 +134,6 @@ public class ESRequest {
     public @ResponseBody String jsonPostTermSearchResultsFromES(@RequestBody String jsonRequest) {
 
         Address addressRequest = parseJsonString(jsonRequest);
-
-        // XXX for testing
-        System.out.println(addressRequest);
 
         String region = addressRequest.getRegion();
         String district = addressRequest.getDistrict();
