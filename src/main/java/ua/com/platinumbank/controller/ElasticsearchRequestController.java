@@ -30,19 +30,23 @@ import org.springframework.web.bind.annotation.RestController;
 
 import ua.com.platinumbank.model.Address;
 
+/**
+ * This class controls searching addresses in Elasticsearch.
+ */
 @RestController
 @RequestMapping(value = "/es")
-public class ElasticSearchRequestController {
+public class ElasticsearchRequestController {
 
     private static Properties properties;
 
+    // Contains Elasticsearch cluster ip
     private static String inetAddress;
 
     // Load properties file with connection specific information
     static {
         properties = new Properties();
 
-        try (InputStream propertiesIn = ElasticSearchRequestController.class.getClassLoader()
+        try (InputStream propertiesIn = ElasticsearchRequestController.class.getClassLoader()
                                                                             .getResourceAsStream(
                                                                                 "properties.properties")) {
 
@@ -55,7 +59,14 @@ public class ElasticSearchRequestController {
         }
     }
 
-    // TODO add javadoc
+    /**
+     * Calls match query with parameters obtained from {@code GET} request.
+     * 
+     * @param request
+     *            {@link HttpServletRequest} from caller
+     * @return {@code JSON} {@link String} with searched {@link Address} objects. In case of any
+     *         {@code Exception} returns {@code JSON} {@code String} with empty {@link Address}.
+     */
     @RequestMapping(value = "/getmatch", method = RequestMethod.GET)
     public @ResponseBody String getMatchSearchResultsFromES(HttpServletRequest request) {
 
@@ -79,11 +90,12 @@ public class ElasticSearchRequestController {
     }
 
     /**
-     * Convenient method to call same match query with POST request.
+     * Convenient method to call match query with {@code POST} request.
      *
      * @param request
-     *            {@link HttpServletRequest}
-     * @return // TODO add return text
+     *            {@link HttpServletRequest} from caller
+     * @return {@code JSON} {@link String} with searched {@link Address} objects. In case of any
+     *         {@code Exception} returns {@code JSON} {@code String} with empty {@link Address}.
      */
     @RequestMapping(value = "/postmatch", method = RequestMethod.POST)
     public @ResponseBody String postMatchSearchResultsFromES(HttpServletRequest request) {
@@ -91,7 +103,14 @@ public class ElasticSearchRequestController {
         return getMatchSearchResultsFromES(request);
     }
 
-    // TODO add javadoc
+    /**
+     * Calls term query with parameters obtained from {@code GET} request.
+     * 
+     * @param request
+     *            {@link HttpServletRequest} from caller
+     * @return {@code JSON} {@link String} with searched {@link Address} objects. In case of any
+     *         {@code Exception} returns {@code JSON} {@code String} with empty {@link Address}.
+     */
     @RequestMapping(value = "/getterm", method = RequestMethod.GET)
     public @ResponseBody String getTermSearchResultsFromES(HttpServletRequest request) {
 
@@ -115,11 +134,12 @@ public class ElasticSearchRequestController {
     }
 
     /**
-     * Convenient method to call same term query with POST request.
+     * Convenient method to call term query with {@code POST} request.
      *
      * @param request
-     *            {@link HttpServletRequest}
-     * @return // TODO add return text
+     *            {@link HttpServletRequest} from caller
+     * @return {@code JSON} {@link String} with searched {@link Address} objects. In case of any
+     *         {@code Exception} returns {@code JSON} {@code String} with empty {@link Address}.
      */
     @RequestMapping(value = "/postterm", method = RequestMethod.POST)
     public @ResponseBody String postTermSearchResultsFromES(HttpServletRequest request) {
@@ -127,7 +147,14 @@ public class ElasticSearchRequestController {
         return getTermSearchResultsFromES(request);
     }
 
-    // TODO add javadoc
+    /**
+     * Calls match query with {@code JSON} request obtained from {@code POST} request.
+     * 
+     * @param jsonRequest
+     *            {@code JSON} {@link String} with request from caller
+     * @return {@code JSON} {@link String} with searched {@link Address} objects. In case of any
+     *         {@code Exception} returns {@code JSON} {@code String} with empty {@link Address}.
+     */
     @RequestMapping(value = "/jsonpostmatch", method = RequestMethod.POST, headers = "Content-Type=application/json")
     public @ResponseBody String jsonPostMatchSearchResultsFromES(@RequestBody String jsonRequest) {
 
@@ -152,7 +179,14 @@ public class ElasticSearchRequestController {
         return response;
     }
 
-    // TODO add javadoc
+    /**
+     * Calls term query with {@code JSON} request obtained from {@code POST} request.
+     *
+     * @param jsonRequest
+     *            {@code JSON} {@link String} with request from caller
+     * @return {@code JSON} {@link String} with searched {@link Address} objects. In case of any
+     *         {@code Exception} returns {@code JSON} {@code String} with empty {@link Address}.
+     */
     @RequestMapping(value = "/jsonpostterm", method = RequestMethod.POST, headers = "Content-Type=application/json")
     public @ResponseBody String jsonPostTermSearchResultsFromES(@RequestBody String jsonRequest) {
 
@@ -177,7 +211,18 @@ public class ElasticSearchRequestController {
         return response;
     }
 
-    // TODO add javadoc
+    /**
+     * Executes match query with specified parameters. Each parameter gets score boost depending on
+     * it's scale in address. If any parameter is empty or {@code null} it won't be queried by.
+     * 
+     * @param region
+     * @param district
+     * @param city
+     * @param postIndex
+     * @param street
+     * @param house
+     * @return {@code JSON} {@link String} with searched {@link Address} objects.
+     */
     private static String queryMatch(String region, String district, String city, String postIndex,
         String street, String house) {
 
@@ -252,7 +297,18 @@ public class ElasticSearchRequestController {
         return searchResponseToString(searchResponse);
     }
 
-    // TODO add javadoc
+    /**
+     * Executes term query with specified parameters. Each parameter gets score boost depending on
+     * it's scale in address. If any parameter is empty or {@code null} it won't be queried by.
+     *
+     * @param region
+     * @param district
+     * @param city
+     * @param postIndex
+     * @param street
+     * @param house
+     * @return {@code JSON} {@link String} with searched {@link Address} objects.
+     */
     private static String queryTerm(String region, String district, String city, String postIndex,
         String street, String house) {
 

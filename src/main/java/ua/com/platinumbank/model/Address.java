@@ -2,6 +2,9 @@ package ua.com.platinumbank.model;
 
 import java.util.Arrays;
 
+/**
+ * This class represents both single search result (Elasticsearch hit) and search request.
+ */
 public class Address {
 
     private static Address emptyAddress;
@@ -13,6 +16,9 @@ public class Address {
     private String street;
     private String[] house;
 
+    // Initialize Address instance with empty fields
+    // This instance will be returned to caller instead of actual search results in case of any
+    // error during search
     static {
         emptyAddress = new Address();
     }
@@ -87,6 +93,7 @@ public class Address {
     }
 
     // This method should not be used by Jackson during auto generating Address object
+    // It is used for deserialization json request from caller
     @com.fasterxml.jackson.annotation.JsonIgnore
     public String getHouseRequest() {
 
@@ -108,6 +115,7 @@ public class Address {
         return this;
     }
 
+    // Returns empty instance
     public static Address getEmptyAddress() {
 
         return emptyAddress;

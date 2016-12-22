@@ -9,9 +9,18 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 
 import ua.com.platinumbank.model.Address;
 
-// TODO add javadoc
+/**
+ * Utility class to deal with {@code JSON} and searches.
+ */
 public class JSONUtil {
 
+    /**
+     * Transforms single {@link Address} into {@code JSON} String.
+     * 
+     * @param address
+     *            {@link Address} instance
+     * @return {@code JSON} {@link String} representing single {@link Address} instance.
+     */
     public static String addressToJSONString(Address address) {
 
         String jsonAddress = null;
@@ -29,6 +38,13 @@ public class JSONUtil {
         return jsonAddress;
     }
 
+    /**
+     * Transforms {@link List} with {@link Address} objects into {@code JSON} String.
+     * 
+     * @param addresses
+     *            {@link List} with {@link Address} objects
+     * @return {@code JSON} {@link String} representing these {@link Address} objects.
+     */
     public static String addressListToJSONString(List<Address> addresses) {
 
         StringBuilder jsonAddresses = new StringBuilder();
@@ -52,7 +68,13 @@ public class JSONUtil {
         return jsonAddresses.toString();
     }
 
-    // TODO add javadoc
+    /**
+     * Parses {@code JSON} string from caller into single {@link Address} object.
+     * 
+     * @param jsonString
+     *            {@code JSON} request {@link String} from caller
+     * @return {@link Address} object representing this {@code JSON} request.
+     */
     public static Address parseJsonString(String jsonString) {
 
         Address addressRequest = null;

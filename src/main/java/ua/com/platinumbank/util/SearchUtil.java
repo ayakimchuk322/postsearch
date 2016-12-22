@@ -11,16 +11,18 @@ import org.elasticsearch.search.SearchHit;
 
 import ua.com.platinumbank.model.Address;
 
-// TODO add javadoc
+/**
+ * Utility class to deal with Elasticsearch search results.
+ */
 public class SearchUtil {
 
     /**
-     * Parses {@link SearchResponse} and returns {@link String} with all concatenated corresponding
-     * {@link Address} objects.
+     * Parses {@link SearchResponse} and returns {@code JSON} {@link String} with all concatenated
+     * corresponding {@link Address} objects.
      *
      * @param searchResponse
-     *            {@link SearchResponse} from ElasticSearch
-     * @return {@code JSON} {@link String} with parsed {@link Address} objects
+     *            {@link SearchResponse} from Elasticsearch
+     * @return {@code JSON} {@link String} with parsed {@link Address} objects.
      */
     public static String searchResponseToString(SearchResponse searchResponse) {
 
@@ -38,8 +40,8 @@ public class SearchUtil {
      * {@link Address} objects.
      *
      * @param searchResponse
-     *            {@link SearchResponse} from ElasticSearch
-     * @return {@link List} with {@link Address} objects
+     *            {@link SearchResponse} from Elasticsearch
+     * @return {@link List} with {@link Address} objects.
      */
     public static List<Address> searchResponseToList(SearchResponse searchResponse) {
 
