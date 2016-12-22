@@ -16,6 +16,7 @@ import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
@@ -30,212 +31,251 @@ import ua.com.platinumbank.model.Address;
 @RequestMapping(value = "/es")
 public class ESRequest {
 
-	private static Properties properties;
+    private static Properties properties;
 
-	private static String inetAddress;
+    private static String inetAddress;
 
-	// Load properties file with connection specific information
-	static {
-		properties = new Properties();
+    // Load properties file with connection specific information
+    static {
+        properties = new Properties();
 
-		try (InputStream propertiesIn = ESRequest.class.getClassLoader()
-				.getResourceAsStream("properties.properties")) {
+        try (InputStream propertiesIn = ESRequest.class.getClassLoader()
+                                                       .getResourceAsStream(
+                                                           "properties.properties")) {
 
-			properties.load(propertiesIn);
+            properties.load(propertiesIn);
 
-			inetAddress = properties.getProperty("inetaddress");
-		} catch (IOException e) {
-			// TODO replace with logging
-			e.printStackTrace();
-		}
-	}
+            inetAddress = properties.getProperty("inetaddress");
+        } catch (IOException e) {
+            // TODO replace with logging
+            e.printStackTrace();
+        }
+    }
 
-	// TODO add javadoc
-	@RequestMapping(value = "/getmatch", method = RequestMethod.GET)
-	public @ResponseBody String getMatchSearchResultsFromES(HttpServletRequest request,
-			Address address) {
+    // TODO add javadoc
+    @RequestMapping(value = "/getmatch", method = RequestMethod.GET)
+    public @ResponseBody String getMatchSearchResultsFromES(HttpServletRequest request,
+        Address address) {
 
-		String region = request.getParameter("region");
-		String district = request.getParameter("district");
-		String city = request.getParameter("city");
-		String postIndex = request.getParameter("postIndex");
-		String street = request.getParameter("street");
-		String house = request.getParameter("house");
+        String region = request.getParameter("region");
+        String district = request.getParameter("district");
+        String city = request.getParameter("city");
+        String postIndex = request.getParameter("postIndex");
+        String street = request.getParameter("street");
+        String house = request.getParameter("house");
 
-		String response = queryMatch(region, district, city, postIndex, street, house);
+        String response = queryMatch(region, district, city, postIndex, street, house);
 
-		// Prepare response for html output
-		response = "<pre>" + response.replaceAll("<", "&lt;") + "</pre>";
+        // Prepare response for html output
+        response = "<pre>" + response.replaceAll("<", "&lt;") + "</pre>";
 
-		return response;
-	}
+        return response;
+    }
 
-	/**
-	 * Convenient method to call same match query with POST request.
-	 * 
-	 * @param request
-	 *            {@link HttpServletRequest}
-	 * @param address
-	 *            {@link Address}
-	 * @return // TODO add return text
-	 */
-	@RequestMapping(value = "/postmatch", method = RequestMethod.POST)
-	public @ResponseBody String postMatchSearchResultsFromES(HttpServletRequest request,
-			Address address) {
+    /**
+     * Convenient method to call same match query with POST request.
+     *
+     * @param request
+     *            {@link HttpServletRequest}
+     * @param address
+     *            {@link Address}
+     * @return // TODO add return text
+     */
+    @RequestMapping(value = "/postmatch", method = RequestMethod.POST)
+    public @ResponseBody String postMatchSearchResultsFromES(HttpServletRequest request,
+        Address address) {
 
-		return getMatchSearchResultsFromES(request, address);
-	}
+        return getMatchSearchResultsFromES(request, address);
+    }
 
-	// TODO add javadoc
-	@RequestMapping(value = "/getterm", method = RequestMethod.GET)
-	public @ResponseBody String getTermSearchResultsFromES(HttpServletRequest request,
-			Address address) {
+    // TODO add javadoc
+    @RequestMapping(value = "/getterm", method = RequestMethod.GET)
+    public @ResponseBody String getTermSearchResultsFromES(HttpServletRequest request,
+        Address address) {
 
-		String region = request.getParameter("region");
-		String district = request.getParameter("district");
-		String city = request.getParameter("city");
-		String postIndex = request.getParameter("postIndex");
-		String street = request.getParameter("street");
-		String house = request.getParameter("house");
+        String region = request.getParameter("region");
+        String district = request.getParameter("district");
+        String city = request.getParameter("city");
+        String postIndex = request.getParameter("postIndex");
+        String street = request.getParameter("street");
+        String house = request.getParameter("house");
 
-		String response = queryTerm(region, district, city, postIndex, street, house);
+        String response = queryTerm(region, district, city, postIndex, street, house);
 
-		// Prepare response for html output
-		response = "<pre>" + response.replaceAll("<", "&lt;") + "</pre>";
+        // Prepare response for html output
+        response = "<pre>" + response.replaceAll("<", "&lt;") + "</pre>";
 
-		return response;
-	}
+        return response;
+    }
 
-	/**
-	 * Convenient method to call same term query with POST request.
-	 *
-	 * @param request
-	 *            {@link HttpServletRequest}
-	 * @param address
-	 *            {@link Address}
-	 * @return // TODO add return text
-	 */
-	@RequestMapping(value = "/postterm", method = RequestMethod.POST)
-	public @ResponseBody String postTermSearchResultsFromES(HttpServletRequest request,
-			Address address) {
+    /**
+     * Convenient method to call same term query with POST request.
+     *
+     * @param request
+     *            {@link HttpServletRequest}
+     * @param address
+     *            {@link Address}
+     * @return // TODO add return text
+     */
+    @RequestMapping(value = "/postterm", method = RequestMethod.POST)
+    public @ResponseBody String postTermSearchResultsFromES(HttpServletRequest request,
+        Address address) {
 
-		return getTermSearchResultsFromES(request, address);
-	}
+        return getTermSearchResultsFromES(request, address);
+    }
 
-	// TODO add javadoc
-	private static String queryMatch(String region, String district, String city, String postIndex,
-			String street, String house) {
+    // TODO add javadoc
+    private static String queryMatch(String region, String district, String city, String postIndex,
+        String street, String house) {
 
-		TransportClient transportClient;
-		SearchRequestBuilder searchRequestBuilder;
-		SearchResponse searchResponse = null;
+        SearchResponse searchResponse = null;
 
-		try {
-			transportClient = new PreBuiltTransportClient(Settings.EMPTY).addTransportAddress(
-					new InetSocketTransportAddress(InetAddress.getByName(inetAddress), 9300));
+        TransportClient transportClient;
+        SearchRequestBuilder searchRequestBuilder;
+        BoolQueryBuilder boolQueryBuilder;
 
-			searchRequestBuilder = transportClient.prepareSearch("logstash-post")
-					.setTypes("address");
+        try {
+            transportClient = new PreBuiltTransportClient(Settings.EMPTY).addTransportAddress(
+                new InetSocketTransportAddress(InetAddress.getByName(inetAddress), 9300));
 
-			if (region != null && !region.isEmpty()) {
-				QueryBuilder regionQb = QueryBuilders.matchQuery("region", region);
-				searchRequestBuilder = searchRequestBuilder.setQuery(regionQb);
-			}
+            searchRequestBuilder = transportClient.prepareSearch("logstash-post")
+                                                  .setTypes("address");
 
-			if (district != null && !district.isEmpty()) {
-				QueryBuilder districtQb = QueryBuilders.matchQuery("district", district);
-				searchRequestBuilder = searchRequestBuilder.setQuery(districtQb);
-			}
+            boolQueryBuilder = new BoolQueryBuilder();
 
-			if (city != null && !city.isEmpty()) {
-				QueryBuilder cityQb = QueryBuilders.matchQuery("city", city);
-				searchRequestBuilder = searchRequestBuilder.setQuery(cityQb);
-			}
+            if (region != null && !region.isEmpty()) {
+                QueryBuilder regionQb = QueryBuilders.matchQuery("region", region)
+                                                     .boost(6.0f);
 
-			if (postIndex != null && !postIndex.isEmpty()) {
-				QueryBuilder postIndexQb = QueryBuilders.matchQuery("post_index", postIndex);
-				searchRequestBuilder = searchRequestBuilder.setQuery(postIndexQb);
-			}
+                boolQueryBuilder = boolQueryBuilder.must(regionQb);
+            }
 
-			if (street != null && !street.isEmpty()) {
-				QueryBuilder streetQb = QueryBuilders.matchQuery("street", street);
-				searchRequestBuilder = searchRequestBuilder.setQuery(streetQb);
-			}
+            if (district != null && !district.isEmpty()) {
+                QueryBuilder districtQb = QueryBuilders.matchQuery("district", district)
+                                                       .boost(5.0f);
 
-			if (house != null && !house.isEmpty()) {
-				QueryBuilder houseQb = QueryBuilders.matchQuery("house", house);
-				searchRequestBuilder = searchRequestBuilder.setQuery(houseQb);
-			}
+                boolQueryBuilder = boolQueryBuilder.must(districtQb);
+            }
 
-			searchResponse = searchRequestBuilder.execute().actionGet();
+            if (city != null && !city.isEmpty()) {
+                QueryBuilder cityQb = QueryBuilders.matchQuery("city", city)
+                                                   .boost(4.0f);
 
-		} catch (UnknownHostException e) {
-			// TODO replace with logging
-			e.printStackTrace();
-		}
+                boolQueryBuilder = boolQueryBuilder.must(cityQb);
+            }
 
-		// XXX for testing
-		searchResponseToList(searchResponse);
+            if (postIndex != null && !postIndex.isEmpty()) {
+                QueryBuilder postIndexQb = QueryBuilders.matchQuery("post_index", postIndex)
+                                                        .boost(3.0f);
 
-		return searchResponseToString(searchResponse);
-	}
+                boolQueryBuilder = boolQueryBuilder.must(postIndexQb);
+            }
 
-	// TODO add javadoc
-	private static String queryTerm(String region, String district, String city, String postIndex,
-			String street, String house) {
+            if (street != null && !street.isEmpty()) {
+                QueryBuilder streetQb = QueryBuilders.matchQuery("street", street)
+                                                     .boost(2.0f);
 
-		TransportClient transportClient;
-		SearchRequestBuilder searchRequestBuilder;
-		SearchResponse searchResponse = null;
+                boolQueryBuilder = boolQueryBuilder.must(streetQb);
+            }
 
-		try {
-			transportClient = new PreBuiltTransportClient(Settings.EMPTY).addTransportAddress(
-					new InetSocketTransportAddress(InetAddress.getByName(inetAddress), 9300));
+            if (house != null && !house.isEmpty()) {
+                QueryBuilder houseQb = QueryBuilders.matchQuery("house", house)
+                                                    .boost(1.1f);
 
-			searchRequestBuilder = transportClient.prepareSearch("logstash-post")
-					.setTypes("address");
+                boolQueryBuilder = boolQueryBuilder.must(houseQb);
+            }
 
-			if (region != null && !region.isEmpty()) {
-				QueryBuilder regionQb = QueryBuilders.termQuery("region.keyword", region);
-				searchRequestBuilder = searchRequestBuilder.setQuery(regionQb);
-			}
+            searchRequestBuilder = searchRequestBuilder.setQuery(boolQueryBuilder);
 
-			if (district != null && !district.isEmpty()) {
-				QueryBuilder districtQb = QueryBuilders.termQuery("district.keyword", district);
-				searchRequestBuilder = searchRequestBuilder.setQuery(districtQb);
-			}
+            searchResponse = searchRequestBuilder.execute()
+                                                 .actionGet();
 
-			if (city != null && !city.isEmpty()) {
-				QueryBuilder cityQb = QueryBuilders.termQuery("city.keyword", city);
-				searchRequestBuilder = searchRequestBuilder.setQuery(cityQb);
-			}
+        } catch (UnknownHostException e) {
+            // TODO replace with logging
+            e.printStackTrace();
+        }
 
-			if (postIndex != null && !postIndex.isEmpty()) {
-				QueryBuilder postIndexQb = QueryBuilders.termQuery("post_index.keyword", postIndex);
-				searchRequestBuilder = searchRequestBuilder.setQuery(postIndexQb);
-			}
+        // XXX for testing
+        searchResponseToList(searchResponse);
 
-			if (street != null && !street.isEmpty()) {
-				QueryBuilder streetQb = QueryBuilders.termQuery("street.keyword", street);
-				searchRequestBuilder = searchRequestBuilder.setQuery(streetQb);
-			}
+        return searchResponseToString(searchResponse);
+    }
 
-			if (house != null && !house.isEmpty()) {
-				QueryBuilder houseQb = QueryBuilders.termQuery("house.keyword", house);
-				searchRequestBuilder = searchRequestBuilder.setQuery(houseQb);
-			}
+    // TODO add javadoc
+    private static String queryTerm(String region, String district, String city, String postIndex,
+        String street, String house) {
 
-			searchResponse = searchRequestBuilder.execute().actionGet();
+        SearchResponse searchResponse = null;
 
-		} catch (UnknownHostException e) {
-			// TODO replace with logging
-			e.printStackTrace();
-		}
+        TransportClient transportClient;
+        SearchRequestBuilder searchRequestBuilder;
+        BoolQueryBuilder boolQueryBuilder;
 
-		// XXX for testing
-		searchResponseToList(searchResponse);
+        try {
+            transportClient = new PreBuiltTransportClient(Settings.EMPTY).addTransportAddress(
+                new InetSocketTransportAddress(InetAddress.getByName(inetAddress), 9300));
 
-		return searchResponseToString(searchResponse);
-	}
+            searchRequestBuilder = transportClient.prepareSearch("logstash-post")
+                                                  .setTypes("address");
+
+            boolQueryBuilder = new BoolQueryBuilder();
+
+            if (region != null && !region.isEmpty()) {
+                QueryBuilder regionQb = QueryBuilders.termQuery("region.keyword", region)
+                                                     .boost(6.0f);
+
+                boolQueryBuilder = boolQueryBuilder.must(regionQb);
+            }
+
+            if (district != null && !district.isEmpty()) {
+                QueryBuilder districtQb = QueryBuilders.termQuery("district.keyword", district)
+                                                       .boost(5.0f);
+
+                boolQueryBuilder = boolQueryBuilder.must(districtQb);
+            }
+
+            if (city != null && !city.isEmpty()) {
+                QueryBuilder cityQb = QueryBuilders.termQuery("city.keyword", city)
+                                                   .boost(4.0f);
+
+                boolQueryBuilder = boolQueryBuilder.must(cityQb);
+            }
+
+            if (postIndex != null && !postIndex.isEmpty()) {
+                QueryBuilder postIndexQb = QueryBuilders.termQuery("post_index.keyword", postIndex)
+                                                        .boost(3.0f);
+
+                boolQueryBuilder = boolQueryBuilder.must(postIndexQb);
+            }
+
+            if (street != null && !street.isEmpty()) {
+                QueryBuilder streetQb = QueryBuilders.termQuery("street.keyword", street)
+                                                     .boost(2.0f);
+
+                boolQueryBuilder = boolQueryBuilder.must(streetQb);
+            }
+
+            if (house != null && !house.isEmpty()) {
+                QueryBuilder houseQb = QueryBuilders.termQuery("house.keyword", house)
+                                                    .boost(1.1f);
+
+                boolQueryBuilder = boolQueryBuilder.must(houseQb);
+            }
+
+            searchRequestBuilder = searchRequestBuilder.setQuery(boolQueryBuilder);
+
+            searchResponse = searchRequestBuilder.execute()
+                                                 .actionGet();
+
+        } catch (UnknownHostException e) {
+            // TODO replace with logging
+            e.printStackTrace();
+        }
+
+        // XXX for testing
+        searchResponseToList(searchResponse);
+
+        return searchResponseToString(searchResponse);
+    }
 
 }
