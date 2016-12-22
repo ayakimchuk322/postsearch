@@ -30,7 +30,7 @@ import ua.com.platinumbank.model.Address;
 
 @RestController
 @RequestMapping(value = "/es")
-public class ESRequest {
+public class ElasticSearchRequestController {
 
     private static Properties properties;
 
@@ -40,8 +40,8 @@ public class ESRequest {
     static {
         properties = new Properties();
 
-        try (InputStream propertiesIn = ESRequest.class.getClassLoader()
-                                                       .getResourceAsStream(
+        try (InputStream propertiesIn = ElasticSearchRequestController.class.getClassLoader()
+                                                                            .getResourceAsStream(
                                                            "properties.properties")) {
 
             properties.load(propertiesIn);
