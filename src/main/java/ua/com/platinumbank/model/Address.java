@@ -4,96 +4,103 @@ import java.util.Arrays;
 
 public class Address {
 
-	private String region;
-	private String district;
-	private String city;
-	private String postIndex;
-	private String street;
-	private String[] house;
+    private String region;
+    private String district;
+    private String city;
+    private String postIndex;
+    private String street;
+    private String[] house;
 
-	public Address() {
+    public Address() {
 
-	}
+    }
 
-	public String getRegion() {
+    public String getRegion() {
 
-		return region;
-	}
+        return region;
+    }
 
-	public Address setRegion(String region) {
+    public Address setRegion(String region) {
 
-		this.region = region != null ? region : "";
-		return this;
-	}
+        this.region = region != null ? region : "";
+        return this;
+    }
 
-	public String getDistrict() {
+    public String getDistrict() {
 
-		return district;
-	}
+        return district;
+    }
 
-	public Address setDistrict(String district) {
+    public Address setDistrict(String district) {
 
-		this.district = district != null ? district : "";
-		return this;
-	}
+        this.district = district != null ? district : "";
+        return this;
+    }
 
-	public String getCity() {
+    public String getCity() {
 
-		return city;
-	}
+        return city;
+    }
 
-	public Address setCity(String city) {
+    public Address setCity(String city) {
 
-		this.city = city != null ? city : "";
-		return this;
-	}
+        this.city = city != null ? city : "";
+        return this;
+    }
 
-	public String getPostIndex() {
+    public String getPostIndex() {
 
-		return postIndex;
-	}
+        return postIndex;
+    }
 
-	public Address setPostIndex(String postIndex) {
+    public Address setPostIndex(String postIndex) {
 
-		this.postIndex = postIndex != null ? postIndex : "";
-		return this;
-	}
+        this.postIndex = postIndex != null ? postIndex : "";
+        return this;
+    }
 
-	public String getStreet() {
+    public String getStreet() {
 
-		return street;
-	}
+        return street;
+    }
 
-	public Address setStreet(String street) {
+    public Address setStreet(String street) {
 
-		this.street = street != null ? street : "";
-		return this;
-	}
+        this.street = street != null ? street : "";
+        return this;
+    }
 
-	public String[] getHouse() {
+    public String[] getHouse() {
 
-		return house;
-	}
+        return house;
+    }
 
-	public Address setHouse(String house) {
+    // This method should not be used by Jackson during auto generating Address object
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    public String getHouseRequest() {
 
-		if (house != null) {
-			// Remove any whitespaces (if any) between house numbers
-			house = house.replaceAll("\\s", "");
+        return house[0];
+    }
 
-			this.house = house.split(",");
-		} else {
-			this.house = new String[1];
-			this.house[0] = "";
-		}
+    public Address setHouse(String house) {
 
-		return this;
-	}
+        if (house != null) {
+            // Remove any whitespaces (if any) between house numbers
+            house = house.replaceAll("\\s", "");
 
-	@Override
-	public String toString() {
+            this.house = house.split(",");
+        } else {
+            this.house = new String[1];
+            this.house[0] = "";
+        }
 
-		// @formatter:off
+        return this;
+    }
+
+    @Override
+    public String toString() {
+
+        // @formatter:off
         return "Address{" +
             "region='" + region + '\'' +
             ", district='" + district + '\'' +
@@ -103,5 +110,5 @@ public class Address {
             ", house=" + Arrays.toString(house) +
             '}';
         // @formatter:on
-	}
+    }
 }
