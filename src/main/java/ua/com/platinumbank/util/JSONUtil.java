@@ -1,5 +1,7 @@
 package ua.com.platinumbank.util;
 
+import java.io.IOException;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -24,6 +26,23 @@ public class JSONUtil {
         }
 
         return jsonAddress;
+    }
+
+    // TODO add javadoc
+    public static Address parseJsonString(String jsonString) {
+
+        Address addressRequest = null;
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        try {
+            addressRequest = objectMapper.readValue(jsonString, Address.class);
+        } catch (IOException e) {
+            // TODO replace with logging
+            e.printStackTrace();
+        }
+
+        return addressRequest;
     }
 
 }
