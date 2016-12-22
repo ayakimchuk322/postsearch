@@ -1,5 +1,7 @@
 package ua.com.platinumbank.model;
 
+import java.util.Arrays;
+
 public class Address {
 
 	private String region;
@@ -7,7 +9,7 @@ public class Address {
 	private String city;
 	private String postIndex;
 	private String street;
-	private String house;
+	private String[] house;
 
 	public Address() {
 
@@ -68,14 +70,23 @@ public class Address {
 		return this;
 	}
 
-	public String getHouse() {
+	public String[] getHouse() {
 
 		return house;
 	}
 
 	public Address setHouse(String house) {
 
-		this.house = house != null ? house : "";
+		if (house != null) {
+			// Remove any whitespaces (if any) between house numbers
+			house = house.replaceAll("\\s", "");
+
+			this.house = house.split(",");
+		} else {
+			this.house = new String[1];
+			this.house[0] = "";
+		}
+
 		return this;
 	}
 
@@ -89,9 +100,8 @@ public class Address {
             ", city='" + city + '\'' +
             ", postIndex='" + postIndex + '\'' +
             ", street='" + street + '\'' +
-            ", house='" + house + '\'' +
+            ", house=" + Arrays.toString(house) +
             '}';
         // @formatter:on
 	}
-
 }
