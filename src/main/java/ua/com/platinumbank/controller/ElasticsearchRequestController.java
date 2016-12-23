@@ -40,7 +40,8 @@ public class ElasticsearchRequestController {
     private static final Properties PROPERTIES;
 
     // Contains Elasticsearch cluster ip
-    private static String inetAddress;
+    private static String INETADDRESS;
+    private static int PORT;
 
     // Load properties file with connection specific information
     static {
@@ -52,7 +53,8 @@ public class ElasticsearchRequestController {
 
             PROPERTIES.load(propertiesIn);
 
-            inetAddress = PROPERTIES.getProperty("inetaddress");
+            INETADDRESS = PROPERTIES.getProperty("inetaddress");
+            PORT = Integer.valueOf(PROPERTIES.getProperty("port"));
         } catch (IOException e) {
             // TODO replace with logging
             e.printStackTrace();
@@ -234,7 +236,7 @@ public class ElasticsearchRequestController {
 
         try {
             transportClient = new PreBuiltTransportClient(Settings.EMPTY).addTransportAddress(
-                new InetSocketTransportAddress(InetAddress.getByName(inetAddress), 9300));
+                new InetSocketTransportAddress(InetAddress.getByName(INETADDRESS), PORT));
 
             searchRequestBuilder = transportClient.prepareSearch("logstash-post")
                                                   .setTypes("address");
@@ -320,7 +322,7 @@ public class ElasticsearchRequestController {
 
         try {
             transportClient = new PreBuiltTransportClient(Settings.EMPTY).addTransportAddress(
-                new InetSocketTransportAddress(InetAddress.getByName(inetAddress), 9300));
+                new InetSocketTransportAddress(InetAddress.getByName(INETADDRESS), PORT));
 
             searchRequestBuilder = transportClient.prepareSearch("logstash-post")
                                                   .setTypes("address");

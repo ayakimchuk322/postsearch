@@ -27,19 +27,25 @@ public class JSONUtil {
      */
     public static String addressToJSONString(Address address) {
 
-        String jsonAddress = null;
+        StringBuilder jsonAddress = new StringBuilder();
 
         ObjectMapper objectMapper = new ObjectMapper();
         ObjectWriter objectWriter = objectMapper.writerWithDefaultPrettyPrinter();
 
         try {
-            jsonAddress = objectWriter.writeValueAsString(address);
+            jsonAddress.append("{")
+                       .append(System.lineSeparator())
+                       .append("\"addresses\" : ")
+                       .append(System.lineSeparator())
+                       .append(objectWriter.writeValueAsString(address))
+                       .append(System.lineSeparator())
+                       .append("}");
         } catch (JsonProcessingException e) {
             // TODO replace with logging
             e.printStackTrace();
         }
 
-        return jsonAddress;
+        return jsonAddress.toString();
     }
 
     /**
