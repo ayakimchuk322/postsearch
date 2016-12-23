@@ -1,5 +1,6 @@
 package ua.com.platinumbank.util;
 
+import static ua.com.platinumbank.model.Address.getEmptyAddress;
 import static ua.com.platinumbank.util.JSONUtil.addressListToJSONString;
 
 import java.util.ArrayList;
@@ -51,36 +52,39 @@ public class SearchUtil {
 
         List<Address> resultList;
 
-        Map resultSourceMap;
-
         SearchHit[] hits = searchResponse.getHits()
                                          .getHits();
 
-        resultList = new ArrayList<>(hits.length);
+        // Check, if no results from Elasticsearch simply return empty address
+        if (hits.length == 0 || hits == null) {
+            resultList = new ArrayList<>(1);
 
-        for (int i = 0; i < hits.length; i++) {
+            resultList.add(0, getEmptyAddress());
+        } else {
+            resultList = new ArrayList<>(hits.length);
 
-            resultSourceMap = hits[i].sourceAsMap();
+            for (int i = 0; i < hits.length; i++) {
 
-            Address address = new Address();
+                Map resultSourceMap = hits[i].sourceAsMap();
 
-            String region = (String) resultSourceMap.get("region");
-            String district = (String) resultSourceMap.get("district");
-            String city = (String) resultSourceMap.get("city");
-            String postIndex = (String) resultSourceMap.get("post_index");
-            String street = (String) resultSourceMap.get("street");
-            String house = (String) resultSourceMap.get("house");
+                Address address = new Address();
 
-            address.setRegion(region);
-            address.setDistrict(district);
-            address.setCity(city);
-            address.setPostIndex(postIndex);
-            address.setStreet(street);
-            address.setHouse(house);
+                String region = (String) resultSourceMap.get("region");
+                String district = (String) resultSourceMap.get("district");
+                String city = (String) resultSourceMap.get("city");
+                String postIndex = (String) resultSourceMap.get("post_index");
+                String street = (String) resultSourceMap.get("street");
+                String house = (String) resultSourceMap.get("house");
 
-            resultList.add(i, address);
+                address.setRegion(region);
+                address.setDistrict(district);
+                address.setCity(city);
+                address.setPostIndex(postIndex);
+                address.setStreet(street);
+                address.setHouse(house);
 
-            System.out.println(address);
+                resultList.add(i, address);
+            }
         }
 
         return resultList;
