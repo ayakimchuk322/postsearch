@@ -84,6 +84,8 @@ public class ElasticsearchRequestController {
 
             response = queryMatch(region, district, city, postIndex, street, house);
         } catch (Exception e) {
+            // TODO replace with logging
+            e.printStackTrace();
             // In case of any exception return to caller empty json address
             response = addressToJSONString(getEmptyAddress());
         }
@@ -128,6 +130,8 @@ public class ElasticsearchRequestController {
 
             response = queryTerm(region, district, city, postIndex, street, house);
         } catch (Exception e) {
+            // TODO replace with logging
+            e.printStackTrace();
             // In case of any exception return to caller empty json address
             response = addressToJSONString(getEmptyAddress());
         }
@@ -174,6 +178,8 @@ public class ElasticsearchRequestController {
 
             response = queryMatch(region, district, city, postIndex, street, house);
         } catch (Exception e) {
+            // TODO replace with logging
+            e.printStackTrace();
             // In case of any exception return to caller empty json address
             response = addressToJSONString(getEmptyAddress());
         }
@@ -206,6 +212,8 @@ public class ElasticsearchRequestController {
 
             response = queryTerm(region, district, city, postIndex, street, house);
         } catch (Exception e) {
+            // TODO replace with logging
+            e.printStackTrace();
             // In case of any exception return to caller empty json address
             response = addressToJSONString(getEmptyAddress());
         }

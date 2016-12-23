@@ -79,6 +79,8 @@ public class SearchUtil {
             address.setHouse(house);
 
             resultList.add(i, address);
+
+            System.out.println(address);
         }
 
         return resultList;
