@@ -2,12 +2,12 @@
          xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <groupId>ua.com.platinumbank</groupId>
-    <artifactId>post-search</artifactId>
-    <packaging>war</packaging>
-    <version>1.0-SNAPSHOT</version>
-    <name>post-search Maven Webapp</name>
-    <url>http://maven.apache.org</url>
+    <artifactId>postsearch</artifactId>
+    <packaging>jar</packaging>
+    <version>0.0.1</version>
+    <name>postsearch app</name>
 
     <dependencies>
 
@@ -88,9 +88,11 @@
 
     </dependencies>
 
-    <build>
+    <properties>
+        <docker.image.prefix>nova</docker.image.prefix>
+    </properties>
 
-        <finalName>post-search</finalName>
+    <build>
 
         <sourceDirectory>src/main/java</sourceDirectory>
 
@@ -101,6 +103,7 @@
         </resources>
 
         <plugins>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -110,6 +113,29 @@
                     <target>1.8</target>
                 </configuration>
             </plugin>
+
+            <plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>0.4.13</version>
+                <configuration>
+                    <dockerHost>https://192.168.99.100:2376</dockerHost>
+                    <dockerCertPath>c:\dockerKey</dockerCertPath>
+                    <imageName>${docker.image.prefix}/${project.artifactId}</imageName>
+                    <imageTags>
+                        <imageTag>${project.version}</imageTag>
+                    </imageTags>
+                    <dockerDirectory>src/main/docker</dockerDirectory>
+                    <resources>
+                        <resource>
+                            <targetPath>/</targetPath>
+                            <directory>${project.build.directory}</directory>
+                            <include>${project.build.finalName}.jar</include>
+                        </resource>
+                    </resources>
+                </configuration>
+            </plugin>
+
         </plugins>
 
     </build>
