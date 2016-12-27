@@ -11,6 +11,14 @@ Configutation:
   Loggers:
 
       Root:
-        level: warn
+        level: error
         AppenderRef:
           - ref: Console_Appender
+
+      Logger:
+        - name: ua.com.platinumbank
+          additivity: false
+          level: info
+          AppenderRef:
+            - ref: Console_Appender
+              level: info
