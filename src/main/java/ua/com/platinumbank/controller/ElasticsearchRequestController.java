@@ -91,6 +91,13 @@ public class ElasticsearchRequestController {
             String street = request.getParameter("street");
             String house = request.getParameter("house");
 
+            if (logger.isInfoEnabled()) {
+                logger.info(
+                    "Requested address: region - \"{}\", district - \"{}\", city - \"{}\", "
+                        + "postIndex " + "- \"{}\", street - \"{}\", house - \"{}\"",
+                    region, district, city, postIndex, street, house);
+            }
+
             response = queryMatch(region, district, city, postIndex, street, house);
         } catch (Exception e) {
             if (logger.isErrorEnabled()) {
@@ -138,6 +145,13 @@ public class ElasticsearchRequestController {
             String postIndex = request.getParameter("postIndex");
             String street = request.getParameter("street");
             String house = request.getParameter("house");
+
+            if (logger.isInfoEnabled()) {
+                logger.info(
+                    "Requested address: region - \"{}\", district - \"{}\", city - \"{}\", "
+                        + "postIndex " + "- \"{}\", street - \"{}\", house - \"{}\"",
+                    region, district, city, postIndex, street, house);
+            }
 
             response = queryTerm(region, district, city, postIndex, street, house);
         } catch (Exception e) {
@@ -189,6 +203,13 @@ public class ElasticsearchRequestController {
             String street = addressRequest.getStreet();
             String house = addressRequest.getHouseRequest();
 
+            if (logger.isInfoEnabled()) {
+                logger.info(
+                    "Requested address: region - \"{}\", district - \"{}\", city - \"{}\", "
+                        + "postIndex " + "- \"{}\", street - \"{}\", house - \"{}\"",
+                    region, district, city, postIndex, street, house);
+            }
+
             response = queryMatch(region, district, city, postIndex, street, house);
         } catch (Exception e) {
             if (logger.isErrorEnabled()) {
@@ -225,6 +246,13 @@ public class ElasticsearchRequestController {
             String postIndex = addressRequest.getPostIndex();
             String street = addressRequest.getStreet();
             String house = addressRequest.getHouseRequest();
+
+            if (logger.isInfoEnabled()) {
+                logger.info(
+                    "Requested address: region - \"{}\", district - \"{}\", city - \"{}\", "
+                        + "postIndex " + "- \"{}\", street - \"{}\", house - \"{}\"",
+                    region, district, city, postIndex, street, house);
+            }
 
             response = queryTerm(region, district, city, postIndex, street, house);
         } catch (Exception e) {

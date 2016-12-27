@@ -16,6 +16,14 @@ Configutation:
           - ref: Console_Appender
 
       Logger:
+        - name: ua.com.platinumbank.StartESSearch
+          additivity: false
+          level: error
+          AppenderRef:
+            - ref: Console_Appender
+              level: error
+
+      Logger:
         - name: ua.com.platinumbank
           additivity: false
           level: info
