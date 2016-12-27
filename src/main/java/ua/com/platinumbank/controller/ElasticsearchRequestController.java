@@ -13,6 +13,8 @@ import java.util.Properties;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.transport.TransportClient;
@@ -37,10 +39,14 @@ import ua.com.platinumbank.model.Address;
 @RequestMapping(value = "/es")
 public class ElasticsearchRequestController {
 
+    // Logger for ElasticsearchRequestController class
+    private static final Logger logger = LogManager.getLogger(ElasticsearchRequestController.class);
+
     private static final Properties PROPERTIES;
 
-    // Contains Elasticsearch cluster ip
+    // Elasticsearch host ip
     private static String INETADDRESS;
+    // Elasticsearch host port
     private static int PORT;
 
     // Load properties file with connection specific information
@@ -56,9 +62,12 @@ public class ElasticsearchRequestController {
             INETADDRESS = PROPERTIES.getProperty("inetaddress");
             PORT = Integer.valueOf(PROPERTIES.getProperty("port"));
         } catch (IOException e) {
-            // TODO replace with logging
-            e.printStackTrace();
+            if (logger.isErrorEnabled()) {
+                logger.error("Error occurred during properties static initializing - {}",
+                    e.getMessage());
+            }
         }
+
     }
 
     /**
@@ -84,8 +93,10 @@ public class ElasticsearchRequestController {
 
             response = queryMatch(region, district, city, postIndex, street, house);
         } catch (Exception e) {
-            // TODO replace with logging
-            e.printStackTrace();
+            if (logger.isErrorEnabled()) {
+                logger.error("Error occurred during handling search request - {}", e.getMessage());
+            }
+
             // In case of any exception return to caller empty json address
             response = addressToJSONString(getEmptyAddress());
         }
@@ -130,8 +141,10 @@ public class ElasticsearchRequestController {
 
             response = queryTerm(region, district, city, postIndex, street, house);
         } catch (Exception e) {
-            // TODO replace with logging
-            e.printStackTrace();
+            if (logger.isErrorEnabled()) {
+                logger.error("Error occurred during handling search request - {}", e.getMessage());
+            }
+
             // In case of any exception return to caller empty json address
             response = addressToJSONString(getEmptyAddress());
         }
@@ -178,8 +191,11 @@ public class ElasticsearchRequestController {
 
             response = queryMatch(region, district, city, postIndex, street, house);
         } catch (Exception e) {
-            // TODO replace with logging
-            e.printStackTrace();
+            if (logger.isErrorEnabled()) {
+                logger.error("Error occurred during handling JSON search request - {}",
+                    e.getMessage());
+            }
+
             // In case of any exception return to caller empty json address
             response = addressToJSONString(getEmptyAddress());
         }
@@ -212,8 +228,11 @@ public class ElasticsearchRequestController {
 
             response = queryTerm(region, district, city, postIndex, street, house);
         } catch (Exception e) {
-            // TODO replace with logging
-            e.printStackTrace();
+            if (logger.isErrorEnabled()) {
+                logger.error("Error occurred during handling JSON search request - {}",
+                    e.getMessage());
+            }
+
             // In case of any exception return to caller empty json address
             response = addressToJSONString(getEmptyAddress());
         }
@@ -286,22 +305,28 @@ public class ElasticsearchRequestController {
                 boolQueryBuilder = boolQueryBuilder.must(streetQb);
             }
 
-            // For house field use wild card query instead of term because house
-            // numbers stored all in one field separated by commas
+            // For house field use wild card query instead of term because house numbers stored
+            // all in one field separated by commas
             if (house != null && !house.isEmpty()) {
                 QueryBuilder houseQb = QueryBuilders.wildcardQuery("house", "*" + house + "*");
 
                 boolQueryBuilder = boolQueryBuilder.must(houseQb);
             }
 
-            searchRequestBuilder = searchRequestBuilder.setQuery(boolQueryBuilder);
+            // If there are no search parameters - (empty) request, - there is no need to call
+            // Elasticsearch
+            if (boolQueryBuilder.hasClauses()) {
+                searchRequestBuilder = searchRequestBuilder.setQuery(boolQueryBuilder);
 
-            searchResponse = searchRequestBuilder.execute()
-                                                 .actionGet();
+                searchResponse = searchRequestBuilder.execute()
+                                                     .actionGet();
+            }
 
         } catch (UnknownHostException e) {
-            // TODO replace with logging
-            e.printStackTrace();
+            if (logger.isErrorEnabled()) {
+                logger.error("Error occurred during communicating with Elasticsearch server - {}",
+                    e.getMessage());
+            }
         }
 
         return searchResponseToString(searchResponse);
@@ -372,22 +397,28 @@ public class ElasticsearchRequestController {
                 boolQueryBuilder = boolQueryBuilder.must(streetQb);
             }
 
-            // For house field use wild card query instead of term because house
-            // numbers stored all in one field separated by commas
+            // For house field use wild card query instead of term because house numbers stored
+            // all in one field separated by commas
             if (house != null && !house.isEmpty()) {
                 QueryBuilder houseQb = QueryBuilders.wildcardQuery("house", "*" + house + "*");
 
                 boolQueryBuilder = boolQueryBuilder.must(houseQb);
             }
 
-            searchRequestBuilder = searchRequestBuilder.setQuery(boolQueryBuilder);
+            // If there are no search parameters - (empty) request, - there is no need to call
+            // Elasticsearch
+            if (boolQueryBuilder.hasClauses()) {
+                searchRequestBuilder = searchRequestBuilder.setQuery(boolQueryBuilder);
 
-            searchResponse = searchRequestBuilder.execute()
-                                                 .actionGet();
+                searchResponse = searchRequestBuilder.execute()
+                                                     .actionGet();
+            }
 
         } catch (UnknownHostException e) {
-            // TODO replace with logging
-            e.printStackTrace();
+            if (logger.isErrorEnabled()) {
+                logger.error("Error occurred during communicating with Elasticsearch server - {}",
+                    e.getMessage());
+            }
         }
 
         return searchResponseToString(searchResponse);

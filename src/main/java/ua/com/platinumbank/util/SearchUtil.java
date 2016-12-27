@@ -18,7 +18,7 @@ import ua.com.platinumbank.model.Address;
 public class SearchUtil {
 
     private SearchUtil() {
-
+        // There is no point to instantiate utility class with static methods
     }
 
     /**

@@ -1,7 +1,12 @@
 package ua.com.platinumbank.util;
 
+import static ua.com.platinumbank.model.Address.getEmptyAddress;
+
 import java.io.IOException;
 import java.util.List;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -14,8 +19,11 @@ import ua.com.platinumbank.model.Address;
  */
 public class JSONUtil {
 
-    private JSONUtil() {
+    // Logger for JSONUtil class
+    private static final Logger logger = LogManager.getLogger(JSONUtil.class);
 
+    private JSONUtil() {
+        // There is no point to instantiate utility class with static methods
     }
 
     /**
@@ -41,8 +49,14 @@ public class JSONUtil {
                        .append(System.lineSeparator())
                        .append("}");
         } catch (JsonProcessingException e) {
-            // TODO replace with logging
-            e.printStackTrace();
+            if (logger.isErrorEnabled()) {
+                logger.error(
+                    "Error occurred during serializing address - \"{}\" - into string - {}",
+                    address.toString(), e.getMessage());
+            }
+
+            // If current address can not be serialized, simply return string from empty address
+            return getEmptyAddress().toString();
         }
 
         return jsonAddress.toString();
@@ -71,8 +85,13 @@ public class JSONUtil {
                          .append(System.lineSeparator())
                          .append("}");
         } catch (JsonProcessingException e) {
-            // TODO replace with logging
-            e.printStackTrace();
+            if (logger.isErrorEnabled()) {
+                logger.error("Error occurred during serializing addresses list into string - {}",
+                    e.getMessage());
+            }
+
+            // If current list can not be serialized, simply return string from empty address
+            return getEmptyAddress().toString();
         }
 
         return jsonAddresses.toString();
@@ -94,8 +113,14 @@ public class JSONUtil {
         try {
             addressRequest = objectMapper.readValue(jsonString, Address.class);
         } catch (IOException e) {
-            // TODO replace with logging
-            e.printStackTrace();
+            if (logger.isErrorEnabled()) {
+                logger.error("Error occurred during reading JSON request - \"{}\" - {}", jsonString,
+                    e.getMessage());
+            }
+
+            // If JSON request can not be read, return empty address object
+            // In this case, search should not be done
+            return getEmptyAddress();
         }
 
         return addressRequest;

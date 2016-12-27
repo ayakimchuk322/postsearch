@@ -2,6 +2,8 @@ package ua.com.platinumbank.model;
 
 import java.util.Arrays;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * This class represents both single search result (Elasticsearch hit) and search request.
  */
@@ -93,8 +95,8 @@ public class Address {
     }
 
     // This method should not be used by Jackson during auto generating Address object
-    // It is used for deserialization json request from caller
-    @com.fasterxml.jackson.annotation.JsonIgnore
+    // It is used for deserialization JSON request from caller
+    @JsonIgnore
     public String getHouseRequest() {
 
         return house[0];
