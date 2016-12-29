@@ -1,0 +1,42 @@
+# ELK stack
+docker run -d --name es_logs -p 9201:9200 -p 9301:9300 elasticsearch:5.1.1
+
+docker run -d --name ls_logs --link es_logs:elasticsearch -v /home/docker/data/logstash.conf:/logstash.conf logstash:5.1.1 logstash -f /logstash.conf
+
+docker run -d --name kb_logs -p 5601:5601 --link es_logs:elasticsearch kibana:5.1.1
+
+
+# config file for logstash
+# hosts array links to running elasticsearch container
+# add this to file logstash.conf insided 'WHATEVER_PATH/for_docker' folder
+# grok pattern should match log4j pattern
+input {
+  gelf { }
+}
+
+filter {
+  grok {
+    match => { "message" => "%{LOGLEVEL:loglevel} %{TIMESTAMP_ISO8601:logdate} %{DATA:thread} %{DATA:classname} %{GREEDYDATA:msgbody}" }
+  }
+}
+
+output {
+  elasticsearch {
+    hosts => ["192.168.99.100:9201"]
+  }
+
+  stdout { }
+}
+
+# in VirtualBox add shared folder with logstash.conf to docker vm, name it 'for_docker'
+
+# edit /var/lib/boot2docker/profile to point to shared folder
+# add next 2 lines:
+mkdir -p /home/docker/data
+mount -t vboxsf -o uid=1000,gid=50 for_docker /home/docker/data
+
+# application
+# logging routed to logstash
+# to get container ip run this:
+# docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ls_logs
+docker run -d --name postsearch -p 8080:8080 --log-driver=gelf --log-opt gelf-address=udp://$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ls_logs):12201 --log-opt tag="fe" nova/postsearch:0.0.1
