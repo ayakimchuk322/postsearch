@@ -6,12 +6,13 @@ Configutation:
       name: Console_Appender
       target: SYSTEM_OUT
       PatternLayout:
-        pattern: "[%-5level] %d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %c{1} - %msg%n"
+#       pattern: "[%-5level] %d{yyyy-MM-dd HH:mm:ss,SSS} [%t] %c{1} - %msg%n"
+        pattern: "%p %d{ISO8601} %t %c{1} %msg%n"
 
   Loggers:
 
       Root:
-        level: error
+        level: info
         AppenderRef:
           - ref: Console_Appender
 
@@ -22,11 +23,15 @@ Configutation:
           AppenderRef:
             - ref: Console_Appender
               level: error
-
-      Logger:
-        - name: ua.com.platinumbank
+        - name: ua.com.platinumbank.ElasticsearchRequestController
           additivity: false
           level: info
           AppenderRef:
             - ref: Console_Appender
               level: info
+        - name: ua.com.platinumbank.JSONUtil
+          additivity: false
+          level: error
+          AppenderRef:
+            - ref: Console_Appender
+              level: error
